@@ -32,45 +32,98 @@ Where should we deploy this real-time emergency system: on-premises data centers
 
 ## Decision Outcome
 
-Chosen option: **"Cloud Serverless Architecture"**, because it best meets the cost optimization requirement, provides built-in auto-scaling for variable workloads, eliminates upfront capital expenditure, and enables rapid deployment. While the hybrid approach offers edge autonomy benefits, the edge components (gateways with Redis store-and-forward) can still be deployed independently while the core processing runs serverless.
+**Chosen option: *On‑Premises Infrastructure***
 
-### Consequences
+The system will be deployed entirely within city-operated data centers
+using a high-availability, cloud‑like cluster architecture (e.g.,
+Kubernetes, Kafka, Redis, InfluxDB, Ceph).\
+This ensures continuity of service even during major WAN outages or
+cloud provider incidents.
 
-* Good, because auto-scaling handles peak 100k events/min without over-provisioning for normal conditions
-* Good, because no upfront hardware investment or data center maintenance costs
-* Good, because managed services reduce operational complexity
-* Good, because geographic redundancy and disaster recovery are built into cloud infrastructure
-* Bad, because potential vendor lock-in to cloud provider APIs
-* Bad, because ongoing operational costs depend on sustained cloud usage patterns
+### Rationale
+
+-   Cloud serverless architectures introduce a **single point of
+    external dependency**.
+-   Emergencies may correlate with WAN failure, datacenter isolation, or
+    cloud outages.
+-   The city retains full control over deployment, operational
+    continuity, diagnostics, and failover.
+-   On-prem clusters can provide cloud‑like scalability and elasticity
+    without external reliance.
+
+## Consequences
+
+### Positive
+
+-   ✔ **Fully independent** from cloud availability and WAN reliability\
+-   ✔ **Resilient** during disasters affecting telecom infrastructure\
+-   ✔ **Lower latency**, since all components run locally\
+-   ✔ **Complete control** over data, security, and logs\
+-   ✔ **Predictable cost structure** after initial investment\
+-   ✔ **Can still integrate optional cloud services** for non-critical
+    analytics
+
+### Negative
+
+-   ❌ Higher **up‑front capital expenditure** (hardware, racks,
+    cooling, power)
+-   ❌ Requires **local operations team** (although smaller than legacy
+    data centers)
+-   ❌ Must provision capacity for peak loads\
+-   ❌ Redundancy across two city datacenters increases cost
 
 ## Pros and Cons of the Options
 
-### On-Premises Infrastructure
+### On-Premises Infrastructure (Chosen)
 
-Deploy all system components (streaming platform, time-series DB, application servers) in city-owned data centers with dedicated hardware.
+**Pros** - High resilience to WAN outages\
+- Full operational control\
+- Data residency ensured\
+- Local HA clustering possible\
+- Low latency\
+- No vendor lock-in
 
-* Good, because complete control over infrastructure and data residency
-* Good, because no dependency on external internet connectivity for core processing
-* Good, because predictable fixed costs after initial investment
-* Neutral, because requires physical security measures for critical infrastructure data
-* Bad, because high upfront capital expenditure
-* Bad, because must provision for peak emergency load (100k events/min)
-* Bad, because requires dedicated operations team for infrastructure maintenance, patching, scaling
-* Bad, because limited ability to scale beyond initial capacity without additional hardware investment
-* Bad, because single point of failure without expensive redundant data center setup
+**Cons** - Requires hardware procurement and maintenance\
+- Higher initial cost\
+- Must manage redundancy across sites
 
-### Hybrid Edge-Cloud Architecture
+------------------------------------------------------------------------
 
-Edge gateways with significant local processing capabilities (simulations, local decision-making) combined with cloud backend for aggregation and cross-district coordination.
+### Cloud Serverless Architecture
 
-* Good, because edge autonomy provides resilience during network outages (addresses C5 gateway communication)
-* Good, because local processing reduces cloud data transfer costs and latency
-* Good, because distributes computational load across edge and cloud tiers
-* Good, because edge can continue emergency response even if cloud connection degrades
-* Bad, because requires sophisticated edge hardware with compute capacity for simulations
-* Bad, because edge simulations may not have full city-wide context needed for cross-district decisions
-* Bad, because higher initial investment than pure serverless approach
+**Pros** - Auto-scaling\
+- No hardware management\
+- Fast to deploy
 
-## More Information
+**Cons** - Depends on WAN and provider\
+- Outages outside city control\
+- Vendor lock-in\
+- Costs unpredictable during peaks
 
-**Decision Alignment**: This decision enables ADR-0002 (microservices architecture) by leveraging cloud-native service mesh and ADR-0003 (Apache Kafka) by using managed streaming platforms. Edge gateway redundancy (C5) and store-and-forward capabilities (Redis) are still implemented regardless of this decision.
+------------------------------------------------------------------------
+
+### Hybrid Edge--Cloud Architecture
+
+**Pros** - Edge nodes provide partial autonomy\
+- Lower cloud transfer costs\
+- Suitable for distributed analytics
+
+**Cons** - Still dependent on cloud for core operations\
+- More complex architecture\
+- Requires both edge and cloud expertise
+
+## Decision Alignment
+
+This decision supports: - **ADR-0002 (Microservices Architecture)** by
+running services in local containers and service mesh.\
+- **ADR-0003 (Managed Streaming Platform)** by hosting Kafka on-prem in
+HA mode.\
+- **C5 (Edge Gateway Redundancy)** since edge devices can operate
+autonomously and forward data to the local cluster.
+
+## Final Notes
+
+The architecture will be implemented as a **high-availability on-prem
+Kubernetes cluster** with replicated storage and redundant networking,
+capable of supporting growth and future integration with optional cloud
+services without compromising autonomy.
