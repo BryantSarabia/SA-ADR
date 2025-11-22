@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="29.1.0" pages="4">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="29.1.1" pages="4">
   <diagram name="high level view" id="pSaV4OROjBG5c2_Hrmhk">
     <mxGraphModel dx="1315" dy="1295" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -555,7 +555,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="LkyLzXC_Oyp_rEYC4Db9" name="Server Layer">
-    <mxGraphModel dx="9045" dy="4985" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="3691" dy="1722" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1024,6 +1024,9 @@
         <mxCell id="eF3LX8z7FKuEwK9e46io-124" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 30px;&quot;&gt;&lt;b&gt;AVAILABILITY ZONE A&lt;/b&gt;&lt;/font&gt;" vertex="1">
           <mxGeometry height="30" width="370" x="-1300" y="-390" as="geometry" />
         </mxCell>
+        <mxCell id="B6OV19d541GUbFiLfJoU-3" edge="1" parent="1" source="eF3LX8z7FKuEwK9e46io-131" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;" target="oKWcgOLCrDbQZppiPSoW-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="eF3LX8z7FKuEwK9e46io-131" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;sketch=1;curveFitting=1;jiggle=2;align=center;" value="&lt;b&gt;&lt;font style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); font-size: 30px;&quot;&gt;INFRASTRUCTURE&lt;/font&gt;&lt;/b&gt;" vertex="1">
           <mxGeometry height="60" width="1190" x="370" y="-780" as="geometry" />
         </mxCell>
@@ -1384,6 +1387,14 @@
         </mxCell>
         <mxCell id="oKWcgOLCrDbQZppiPSoW-112" edge="1" parent="oKWcgOLCrDbQZppiPSoW-107" source="oKWcgOLCrDbQZppiPSoW-109" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" target="oKWcgOLCrDbQZppiPSoW-111">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="B6OV19d541GUbFiLfJoU-1" edge="1" parent="1" source="oKWcgOLCrDbQZppiPSoW-113" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="eF3LX8z7FKuEwK9e46io-131">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2124" y="-260" />
+              <mxPoint x="1263" y="-260" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="oKWcgOLCrDbQZppiPSoW-113" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Command Broker" vertex="1">
           <mxGeometry height="60" width="120" x="2064" y="-90" as="geometry" />
