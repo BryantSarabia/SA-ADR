@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="29.1.1" pages="5">
   <diagram name="high level view" id="pSaV4OROjBG5c2_Hrmhk">
-    <mxGraphModel dx="1315" dy="1295" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="815" dy="777" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -555,7 +555,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="LkyLzXC_Oyp_rEYC4Db9" name="Server Layer">
-    <mxGraphModel dx="4631" dy="2071" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="5112" dy="2295" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -873,22 +873,22 @@
           <mxGeometry height="30" width="189.5" y="200" as="geometry" />
         </mxCell>
         <mxCell id="oKWcgOLCrDbQZppiPSoW-98" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;sketch=1;curveFitting=1;jiggle=2;" value="" vertex="1">
-          <mxGeometry height="230" width="177.5" x="1714.75" y="551" as="geometry" />
+          <mxGeometry height="230" width="177.5" x="1584.75" y="555.5" as="geometry" />
         </mxCell>
         <mxCell id="oKWcgOLCrDbQZppiPSoW-99" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Backend" vertex="1">
-          <mxGeometry height="60" width="120" x="1744.75" y="671" as="geometry" />
+          <mxGeometry height="60" width="120" x="1614.75" y="675.5" as="geometry" />
         </mxCell>
         <mxCell id="oKWcgOLCrDbQZppiPSoW-100" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;container=0;" value="&lt;b&gt;Audit Trail Microservice&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="189.5" x="1710" y="751" as="geometry" />
+          <mxGeometry height="30" width="189.5" x="1580" y="755.5" as="geometry" />
         </mxCell>
         <mxCell id="oKWcgOLCrDbQZppiPSoW-101" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Audit Trail API" vertex="1">
-          <mxGeometry height="60" width="120" x="1744.5" y="572" as="geometry" />
+          <mxGeometry height="60" width="120" x="1614.5" y="576.5" as="geometry" />
         </mxCell>
         <mxCell id="oKWcgOLCrDbQZppiPSoW-102" edge="1" parent="1" source="oKWcgOLCrDbQZppiPSoW-99" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" target="oKWcgOLCrDbQZppiPSoW-101">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="oKWcgOLCrDbQZppiPSoW-103" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="Audit trail&lt;div&gt;storage&lt;/div&gt;" vertex="1">
-          <mxGeometry height="80" width="60" x="1774.75" y="820" as="geometry" />
+          <mxGeometry height="80" width="60" x="1644.75" y="824.5" as="geometry" />
         </mxCell>
         <mxCell id="oKWcgOLCrDbQZppiPSoW-104" edge="1" parent="1" source="oKWcgOLCrDbQZppiPSoW-99" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="oKWcgOLCrDbQZppiPSoW-103">
           <mxGeometry relative="1" as="geometry" />
@@ -1357,22 +1357,22 @@
           <mxGeometry height="30" width="189.5" y="200" as="geometry" />
         </mxCell>
         <mxCell id="9o6pPI_A21-qWGh0IZrB-97" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;sketch=1;curveFitting=1;jiggle=2;" value="" vertex="1">
-          <mxGeometry height="230" width="177.5" x="-1005.25" y="561" as="geometry" />
+          <mxGeometry height="230" width="177.5" x="-1115.25" y="565.5" as="geometry" />
         </mxCell>
         <mxCell id="9o6pPI_A21-qWGh0IZrB-98" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Backend" vertex="1">
-          <mxGeometry height="60" width="120" x="-975.25" y="681" as="geometry" />
+          <mxGeometry height="60" width="120" x="-1085.25" y="685.5" as="geometry" />
         </mxCell>
         <mxCell id="9o6pPI_A21-qWGh0IZrB-99" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;container=0;" value="&lt;b&gt;Audit Trail Microservice&lt;/b&gt;" vertex="1">
-          <mxGeometry height="30" width="189.5" x="-1010" y="761" as="geometry" />
+          <mxGeometry height="30" width="189.5" x="-1120" y="765.5" as="geometry" />
         </mxCell>
         <mxCell id="9o6pPI_A21-qWGh0IZrB-100" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Audit Trail API" vertex="1">
-          <mxGeometry height="60" width="120" x="-975.5" y="582" as="geometry" />
+          <mxGeometry height="60" width="120" x="-1085.5" y="586.5" as="geometry" />
         </mxCell>
         <mxCell id="9o6pPI_A21-qWGh0IZrB-101" edge="1" parent="1" source="9o6pPI_A21-qWGh0IZrB-98" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;startArrow=classic;startFill=1;" target="9o6pPI_A21-qWGh0IZrB-100">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="9o6pPI_A21-qWGh0IZrB-102" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="Audit trail&lt;div&gt;storage&lt;/div&gt;" vertex="1">
-          <mxGeometry height="80" width="60" x="-945.25" y="830" as="geometry" />
+          <mxGeometry height="80" width="60" x="-1055.25" y="834.5" as="geometry" />
         </mxCell>
         <mxCell id="9o6pPI_A21-qWGh0IZrB-103" edge="1" parent="1" source="9o6pPI_A21-qWGh0IZrB-98" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="9o6pPI_A21-qWGh0IZrB-102">
           <mxGeometry relative="1" as="geometry" />
@@ -1578,6 +1578,54 @@
               <mxPoint x="2805" y="260" />
               <mxPoint x="2123" y="260" />
             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="NJ9c2rG_o5o-6lmJnMXu-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;sketch=1;curveFitting=1;jiggle=2;" value="" vertex="1">
+          <mxGeometry height="230" width="177.5" x="-915.25" y="565.5" as="geometry" />
+        </mxCell>
+        <mxCell id="NJ9c2rG_o5o-6lmJnMXu-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Backend" vertex="1">
+          <mxGeometry height="60" width="120" x="-885.25" y="685.5" as="geometry" />
+        </mxCell>
+        <mxCell id="NJ9c2rG_o5o-6lmJnMXu-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;container=0;" value="&lt;b&gt;Log Manager Microservice&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="189.5" x="-920" y="765.5" as="geometry" />
+        </mxCell>
+        <mxCell id="NJ9c2rG_o5o-6lmJnMXu-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Log Manager API" vertex="1">
+          <mxGeometry height="60" width="120" x="-885.5" y="586.5" as="geometry" />
+        </mxCell>
+        <mxCell id="NJ9c2rG_o5o-6lmJnMXu-10" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="Log&lt;div&gt;storage&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="60" x="-855.25" y="834.5" as="geometry" />
+        </mxCell>
+        <mxCell id="wVn7GpqJmfuIL_ija-fr-1" edge="1" parent="1" source="NJ9c2rG_o5o-6lmJnMXu-7" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="NJ9c2rG_o5o-6lmJnMXu-9" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="-830" y="730" as="sourcePoint" />
+            <mxPoint x="-780" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="wVn7GpqJmfuIL_ija-fr-2" edge="1" parent="1" source="NJ9c2rG_o5o-6lmJnMXu-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="NJ9c2rG_o5o-6lmJnMXu-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wVn7GpqJmfuIL_ija-fr-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;sketch=1;curveFitting=1;jiggle=2;" value="" vertex="1">
+          <mxGeometry height="230" width="177.5" x="1794.75" y="555.5" as="geometry" />
+        </mxCell>
+        <mxCell id="wVn7GpqJmfuIL_ija-fr-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Backend" vertex="1">
+          <mxGeometry height="60" width="120" x="1824.75" y="675.5" as="geometry" />
+        </mxCell>
+        <mxCell id="wVn7GpqJmfuIL_ija-fr-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;container=0;" value="&lt;b&gt;Log Manager Microservice&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="189.5" x="1790" y="755.5" as="geometry" />
+        </mxCell>
+        <mxCell id="wVn7GpqJmfuIL_ija-fr-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Log Manager API" vertex="1">
+          <mxGeometry height="60" width="120" x="1824.5" y="576.5" as="geometry" />
+        </mxCell>
+        <mxCell id="wVn7GpqJmfuIL_ija-fr-7" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="Log&lt;div&gt;storage&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="60" x="1854.75" y="824.5" as="geometry" />
+        </mxCell>
+        <mxCell id="wVn7GpqJmfuIL_ija-fr-9" edge="1" parent="1" source="wVn7GpqJmfuIL_ija-fr-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="wVn7GpqJmfuIL_ija-fr-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="wVn7GpqJmfuIL_ija-fr-10" edge="1" parent="1" source="wVn7GpqJmfuIL_ija-fr-4" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="wVn7GpqJmfuIL_ija-fr-6" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1860" y="710" as="sourcePoint" />
+            <mxPoint x="1910" y="660" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>
