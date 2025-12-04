@@ -1,0 +1,23 @@
+{
+  "name": "data-producer",
+  "version": "1.0.0",
+  "description": "Mock data producer for Digital Twin State Manager",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": ["kafka", "mock", "data-producer"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "kafkajs": "^2.2.4",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  }
+}

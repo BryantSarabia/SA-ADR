@@ -1,1 +1,136 @@
+version: '3.8'
+
 services:
+  # Redis - In-memory state store
+  redis:
+    image: redis:7-alpine
+    container_name: dt-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - digital-twin-network
+
+  # MongoDB - Historical snapshots
+  mongodb:
+    image: mongo:6
+    container_name: dt-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: digital_twin
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - digital-twin-network
+
+  # Zookeeper - Required for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: dt-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - digital-twin-network
+
+  # Kafka - Message broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: dt-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: 3
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - digital-twin-network
+
+  # State Manager - Main service
+  state-manager:
+    build:
+      context: ./state-manager
+      dockerfile: Dockerfile
+    container_name: dt-state-manager
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_DATABASE: digital_twin
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_GROUP_ID: state-manager-group
+      KAFKA_CLIENT_ID: state-manager
+      API_PORT: 3000
+      WEBSOCKET_PORT: 3001
+      NODE_ENV: development
+      LOG_LEVEL: info
+      SNAPSHOT_INTERVAL_MS: 300000
+      SNAPSHOT_MIN_CHANGES: 100
+      WS_UPDATE_BUFFER_MS: 100
+    networks:
+      - digital-twin-network
+    restart: unless-stopped
+
+  # Data Producer - Mock Kafka message generator
+  data-producer:
+    build:
+      context: ./producer
+      dockerfile: Dockerfile
+    container_name: dt-data-producer
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_CLIENT_ID: data-producer
+      MESSAGE_INTERVAL_MS: 2000
+      LOG_LEVEL: info
+    networks:
+      - digital-twin-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  mongodb-data:
+
+networks:
+  digital-twin-network:
+    driver: bridge
