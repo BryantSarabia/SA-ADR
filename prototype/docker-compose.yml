@@ -192,6 +192,25 @@ services:
       - ems-network
     restart: unless-stopped
 
+  # === AGGREGATOR ===
+
+  # Snapshot Aggregator - Aggregates streaming data into periodic snapshots
+  snapshot-aggregator:
+    build:
+      context: .
+      dockerfile: ./snapshot-aggregator/Dockerfile
+    container_name: ems-snapshot-aggregator
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SNAPSHOT_INTERVAL: 10
+      STATE_TTL: 30
+    networks:
+      - ems-network
+    restart: unless-stopped
+
 networks:
   ems-network:
     driver: bridge
