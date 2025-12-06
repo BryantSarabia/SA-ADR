@@ -1,0 +1,521 @@
+{
+  "nodes": [
+    {
+      "nodeId": "N-001",
+      "type": "intersection",
+      "name": "Piazza Duomo & Via Roma",
+      "location": {
+        "latitude": 42.3498,
+        "longitude": 13.3995
+      }
+    },
+    {
+      "nodeId": "N-002",
+      "type": "intersection",
+      "name": "Corso Vittorio Emanuele II & Via San Bernardino",
+      "location": {
+        "latitude": 42.3505,
+        "longitude": 13.3988
+      }
+    },
+    {
+      "nodeId": "N-003",
+      "type": "intersection",
+      "name": "Piazza del Palazzo & Via Fortebraccio",
+      "location": {
+        "latitude": 42.3512,
+        "longitude": 13.3978
+      }
+    },
+    {
+      "nodeId": "N-004",
+      "type": "intersection",
+      "name": "Viale Gran Sasso & Via XX Settembre",
+      "location": {
+        "latitude": 42.3520,
+        "longitude": 13.4005
+      }
+    },
+    {
+      "nodeId": "N-005",
+      "type": "intersection",
+      "name": "Via Giuseppe Garibaldi & Via Castello",
+      "location": {
+        "latitude": 42.3490,
+        "longitude": 13.4010
+      }
+    },
+    {
+      "nodeId": "N-006",
+      "type": "intersection",
+      "name": "Corso Federico II & Via Indipendenza",
+      "location": {
+        "latitude": 42.3515,
+        "longitude": 13.4020
+      }
+    },
+    {
+      "nodeId": "N-007",
+      "type": "intersection",
+      "name": "Via della Croce Rossa & Viale della Croce Rossa",
+      "location": {
+        "latitude": 42.3485,
+        "longitude": 13.3970
+      }
+    },
+    {
+      "nodeId": "N-008",
+      "type": "intersection",
+      "name": "Piazza Fontana Luminosa & Via Leonardo da Vinci",
+      "location": {
+        "latitude": 42.3475,
+        "longitude": 13.3960
+      }
+    },
+    {
+      "nodeId": "N-009",
+      "type": "intersection",
+      "name": "Via Strinella & Via Fontesecco",
+      "location": {
+        "latitude": 42.3530,
+        "longitude": 13.4015
+      }
+    },
+    {
+      "nodeId": "N-010",
+      "type": "intersection",
+      "name": "Piazza Battaglione Alpini & Via Campo di Fossa",
+      "location": {
+        "latitude": 42.3540,
+        "longitude": 13.4000
+      }
+    },
+    {
+      "nodeId": "N-011",
+      "type": "intersection",
+      "name": "Via Pescara & Via Ulisse Nurzia",
+      "location": {
+        "latitude": 42.3465,
+        "longitude": 13.4025
+      }
+    },
+    {
+      "nodeId": "N-012",
+      "type": "intersection",
+      "name": "Via Caldora & Via del Beato Cesidio",
+      "location": {
+        "latitude": 42.3525,
+        "longitude": 13.3965
+      }
+    },
+    {
+      "nodeId": "N-013",
+      "type": "intersection",
+      "name": "Via Antica Arischia & Via Aterno",
+      "location": {
+        "latitude": 42.3455,
+        "longitude": 13.3985
+      }
+    },
+    {
+      "nodeId": "N-014",
+      "type": "intersection",
+      "name": "Via Giovanni XXIII & Via Salaria Antica",
+      "location": {
+        "latitude": 42.3550,
+        "longitude": 13.3990
+      }
+    },
+    {
+      "nodeId": "N-015",
+      "type": "intersection",
+      "name": "Strada Statale 17 & Via Mausonia",
+      "location": {
+        "latitude": 42.3460,
+        "longitude": 13.4040
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "E-001",
+      "roadSegmentId": "RS-101",
+      "name": "Corso Vittorio Emanuele II",
+      "fromNode": "N-001",
+      "toNode": "N-002",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3995, 42.3498],
+          [13.3992, 42.3501],
+          [13.3988, 42.3505]
+        ]
+      },
+      "distance": 120,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-002",
+      "roadSegmentId": "RS-102",
+      "name": "Via San Bernardino",
+      "fromNode": "N-002",
+      "toNode": "N-003",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3988, 42.3505],
+          [13.3983, 42.3508],
+          [13.3978, 42.3512]
+        ]
+      },
+      "distance": 150,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-003",
+      "roadSegmentId": "RS-103",
+      "name": "Via Fortebraccio",
+      "fromNode": "N-003",
+      "toNode": "N-012",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3978, 42.3512],
+          [13.3972, 42.3518],
+          [13.3965, 42.3525]
+        ]
+      },
+      "distance": 180,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-004",
+      "roadSegmentId": "RS-104",
+      "name": "Viale Gran Sasso",
+      "fromNode": "N-004",
+      "toNode": "N-006",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.4005, 42.3520],
+          [13.4012, 42.3518],
+          [13.4020, 42.3515]
+        ]
+      },
+      "distance": 200,
+      "speedLimit": 50,
+      "lanes": 3,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-005",
+      "roadSegmentId": "RS-105",
+      "name": "Via Giuseppe Garibaldi",
+      "fromNode": "N-001",
+      "toNode": "N-005",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3995, 42.3498],
+          [13.4002, 42.3494],
+          [13.4010, 42.3490]
+        ]
+      },
+      "distance": 140,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-006",
+      "roadSegmentId": "RS-106",
+      "name": "Via Castello",
+      "fromNode": "N-005",
+      "toNode": "N-006",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.4010, 42.3490],
+          [13.4015, 42.3502],
+          [13.4020, 42.3515]
+        ]
+      },
+      "distance": 280,
+      "speedLimit": 50,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-007",
+      "roadSegmentId": "RS-107",
+      "name": "Via della Croce Rossa",
+      "fromNode": "N-007",
+      "toNode": "N-001",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3970, 42.3485],
+          [13.3982, 42.3491],
+          [13.3995, 42.3498]
+        ]
+      },
+      "distance": 160,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-008",
+      "roadSegmentId": "RS-108",
+      "name": "Viale della Croce Rossa",
+      "fromNode": "N-007",
+      "toNode": "N-008",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3970, 42.3485],
+          [13.3965, 42.3478],
+          [13.3960, 42.3475]
+        ]
+      },
+      "distance": 130,
+      "speedLimit": 50,
+      "lanes": 3,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-009",
+      "roadSegmentId": "RS-109",
+      "name": "Via Leonardo da Vinci",
+      "fromNode": "N-008",
+      "toNode": "N-013",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3960, 42.3475],
+          [13.3972, 42.3465],
+          [13.3985, 42.3455]
+        ]
+      },
+      "distance": 240,
+      "speedLimit": 50,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-010",
+      "roadSegmentId": "RS-110",
+      "name": "Via Strinella",
+      "fromNode": "N-004",
+      "toNode": "N-009",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.4005, 42.3520],
+          [13.4010, 42.3525],
+          [13.4015, 42.3530]
+        ]
+      },
+      "distance": 130,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-011",
+      "roadSegmentId": "RS-111",
+      "name": "Via Campo di Fossa",
+      "fromNode": "N-009",
+      "toNode": "N-010",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.4015, 42.3530],
+          [13.4008, 42.3535],
+          [13.4000, 42.3540]
+        ]
+      },
+      "distance": 140,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-012",
+      "roadSegmentId": "RS-112",
+      "name": "Via XX Settembre",
+      "fromNode": "N-003",
+      "toNode": "N-004",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3978, 42.3512],
+          [13.3991, 42.3516],
+          [13.4005, 42.3520]
+        ]
+      },
+      "distance": 220,
+      "speedLimit": 50,
+      "lanes": 3,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-013",
+      "roadSegmentId": "RS-113",
+      "name": "Via Pescara",
+      "fromNode": "N-005",
+      "toNode": "N-011",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.4010, 42.3490],
+          [13.4017, 42.3478],
+          [13.4025, 42.3465]
+        ]
+      },
+      "distance": 290,
+      "speedLimit": 50,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-014",
+      "roadSegmentId": "RS-114",
+      "name": "Via Ulisse Nurzia",
+      "fromNode": "N-011",
+      "toNode": "N-015",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.4025, 42.3465],
+          [13.4032, 42.3462],
+          [13.4040, 42.3460]
+        ]
+      },
+      "distance": 110,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-015",
+      "roadSegmentId": "RS-115",
+      "name": "Via Antica Arischia",
+      "fromNode": "N-013",
+      "toNode": "N-011",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3985, 42.3455],
+          [13.4005, 42.3460],
+          [13.4025, 42.3465]
+        ]
+      },
+      "distance": 260,
+      "speedLimit": 50,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-016",
+      "roadSegmentId": "RS-116",
+      "name": "Via Giovanni XXIII",
+      "fromNode": "N-010",
+      "toNode": "N-014",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.4000, 42.3540],
+          [13.3995, 42.3545],
+          [13.3990, 42.3550]
+        ]
+      },
+      "distance": 140,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-017",
+      "roadSegmentId": "RS-117",
+      "name": "Via Caldora",
+      "fromNode": "N-012",
+      "toNode": "N-014",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3965, 42.3525],
+          [13.3978, 42.3537],
+          [13.3990, 42.3550]
+        ]
+      },
+      "distance": 300,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-018",
+      "roadSegmentId": "RS-118",
+      "name": "Corso Federico II",
+      "fromNode": "N-006",
+      "toNode": "N-009",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.4020, 42.3515],
+          [13.4018, 42.3522],
+          [13.4015, 42.3530]
+        ]
+      },
+      "distance": 170,
+      "speedLimit": 50,
+      "lanes": 3,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-019",
+      "roadSegmentId": "RS-119",
+      "name": "Via Roma",
+      "fromNode": "N-001",
+      "toNode": "N-007",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.3995, 42.3498],
+          [13.3982, 42.3492],
+          [13.3970, 42.3485]
+        ]
+      },
+      "distance": 160,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-020",
+      "roadSegmentId": "RS-120",
+      "name": "Strada Statale 17",
+      "fromNode": "N-015",
+      "toNode": "N-011",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [13.4040, 42.3460],
+          [13.4032, 42.3462],
+          [13.4025, 42.3465]
+        ]
+      },
+      "distance": 110,
+      "speedLimit": 60,
+      "lanes": 4,
+      "direction": "bidirectional"
+    }
+  ]
+}

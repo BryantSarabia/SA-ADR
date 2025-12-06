@@ -1,0 +1,70 @@
+{
+  "nodes": [
+    {
+      "nodeId": "N-001",
+      "type": "intersection",
+      "name": "Main St & 1st Ave",
+      "location": {
+        "latitude": 40.7128,
+        "longitude": -74.006
+      }
+    },
+    {
+      "nodeId": "N-002",
+      "type": "intersection",
+      "name": "Main St & 2nd Ave",
+      "location": {
+        "latitude": 40.7138,
+        "longitude": -74.005
+      }
+    },
+    {
+      "nodeId": "N-005",
+      "type": "intersection",
+      "name": "Park Ave & 1st Ave",
+      "location": {
+        "latitude": 40.7125,
+        "longitude": -74.008
+      }
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "E-001",
+      "roadSegmentId": "RS-101",
+      "name": "Main St (1st-2nd)",
+      "fromNode": "N-001",
+      "toNode": "N-002",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.006, 40.7128],
+          [-74.006, 40.7128],
+          [-74.005, 40.7138]
+        ]
+      },
+      "distance": 150,
+      "speedLimit": 50,
+      "lanes": 3,
+      "direction": "bidirectional"
+    },
+    {
+      "edgeId": "E-005",
+      "roadSegmentId": "RS-105",
+      "name": "Park Ave (Main-1st)",
+      "fromNode": "N-005",
+      "toNode": "N-001",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-74.008, 40.7125],
+          [-74.006, 40.7128]
+        ]
+      },
+      "distance": 120,
+      "speedLimit": 40,
+      "lanes": 2,
+      "direction": "bidirectional"
+    }
+  ]
+}
