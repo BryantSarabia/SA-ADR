@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  graph-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laquila-graph-generator
+    volumes:
+      - ./output:/app/output
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true

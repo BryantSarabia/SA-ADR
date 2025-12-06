@@ -14,11 +14,3 @@ dist/
 build/
 
 # Generated output directory
-output/
-
-# Legacy output files (if run without Docker)
-laquila_graph_nodes.geojson
-laquila_graph_edges.geojson
-laquila-city-graph-overture.json
-laquila_segment.geojson
-laquila_connector.geojson

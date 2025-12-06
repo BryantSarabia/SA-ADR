@@ -16,38 +16,40 @@ import geopandas as gpd
 LAQUILA_BBOX = [13.38, 42.34, 13.42, 42.36]
 
 def main():
-    print("Downloading road segment data for L'Aquila from Overture Maps...")
+    print("Processing road segment data for L'Aquila...")
     
     # Set output directory (use /app/output for Docker, current dir otherwise)
     import os
     output_dir = '/app/output' if os.path.exists('/app/output') else '.'
     
-    # Load road segment and connector data from Overture Maps
-    # Using the release version from the documentation examples
-    # data = c2g.load_overture_data(
-    #     area=LAQUILA_BBOX,
-    #     types=['segment', 'connector'],
-    #     output_dir=output_dir,
-    #     prefix='laquila_',
-    #     save_to_file=True,
-    #     return_data=True,
-    #     release='2025-11-19.0',
-    #     use_stac=True  # Disable STAC to avoid 403 errors
-    # )
+    # Read GeoJSON files downloaded via DuckDB
+    print("Loading segment data from GeoJSON...")
+    segments_gdf = gpd.read_file(f"{output_dir}/laquila_segment.geojson")
     
-    # segments_gdf = data.get('segment')
-    # connectors_gdf = data.get('connector')
+    print("Loading connector data from GeoJSON...")
+    try:
+        connectors_gdf = gpd.read_file(f"{output_dir}/laquila_connector.geojson")
+        if connectors_gdf.empty:
+            connectors_gdf = None
+    except Exception as e:
+        print(f"Warning: Could not load connectors: {e}")
+        connectors_gdf = None
     
-    segments_gdf = gpd.read_parquet("overture_segment_parquets")
-    # If also needed, load connectors similarly
-    connectors_gdf = gpd.read_parquet("overture_connector_parquets")
     if segments_gdf is None or segments_gdf.empty:
         print("Error: No segment data downloaded. Check your internet connection.")
         return
     
     print(f"Downloaded {len(segments_gdf)} road segments")
-    if connectors_gdf is not None:
+    if connectors_gdf is not None and not connectors_gdf.empty:
         print(f"Downloaded {len(connectors_gdf)} connectors")
+    
+    # Convert to projected CRS for accurate length calculations
+    # Using UTM zone 33N for L'Aquila, Italy
+    print("\nConverting to projected CRS (UTM 33N)...")
+    target_crs = "EPSG:32633"  # UTM zone 33N
+    segments_gdf = segments_gdf.to_crs(target_crs)
+    if connectors_gdf is not None and not connectors_gdf.empty:
+        connectors_gdf = connectors_gdf.to_crs(target_crs)
     
     # Process segments to split at connectors and prepare for graph conversion
     print("\nProcessing road segments...")
@@ -69,6 +71,11 @@ def main():
     )
     
     print(f"Generated graph with {len(nodes_gdf)} nodes and {len(edges_gdf)} edges")
+    
+    # Convert back to WGS84 for GeoJSON export
+    print("\nConverting back to WGS84 for export...")
+    nodes_gdf = nodes_gdf.to_crs("EPSG:4326")
+    edges_gdf = edges_gdf.to_crs("EPSG:4326")
     
     # Export to GeoJSON format
     print("\nExporting to GeoJSON...")
