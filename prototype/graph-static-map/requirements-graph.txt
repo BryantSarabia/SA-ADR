@@ -1,6 +1,6 @@
-city2graph>=0.1.7
-geopandas>=0.14.0
-shapely>=2.0.0
+city2graph
+geopandas
+shapely
 networkx
 libpysal
 momepy

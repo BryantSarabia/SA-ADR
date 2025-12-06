@@ -24,19 +24,23 @@ def main():
     
     # Load road segment and connector data from Overture Maps
     # Using the release version from the documentation examples
-    data = c2g.load_overture_data(
-        area=LAQUILA_BBOX,
-        types=['segment', 'connector'],
-        output_dir=output_dir,
-        prefix='laquila_',
-        save_to_file=True,
-        return_data=True,
-        use_stac=False  # Disable STAC to avoid 403 errors
-    )
+    # data = c2g.load_overture_data(
+    #     area=LAQUILA_BBOX,
+    #     types=['segment', 'connector'],
+    #     output_dir=output_dir,
+    #     prefix='laquila_',
+    #     save_to_file=True,
+    #     return_data=True,
+    #     release='2025-11-19.0',
+    #     use_stac=True  # Disable STAC to avoid 403 errors
+    # )
     
-    segments_gdf = data.get('segment')
-    connectors_gdf = data.get('connector')
+    # segments_gdf = data.get('segment')
+    # connectors_gdf = data.get('connector')
     
+    segments_gdf = gpd.read_parquet("overture_segment_parquets")
+    # If also needed, load connectors similarly
+    connectors_gdf = gpd.read_parquet("overture_connector_parquets")
     if segments_gdf is None or segments_gdf.empty:
         print("Error: No segment data downloaded. Check your internet connection.")
         return
