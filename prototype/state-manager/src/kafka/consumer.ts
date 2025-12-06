@@ -1,4 +1,4 @@
-import { Consumer, EachMessagePayload, Kafka } from 'kafkajs';
+import { Consumer, EachBatchPayload, Kafka } from 'kafkajs';
 import { RedisStateManager } from '../state/redis-manager';
 import { SnapshotManager } from '../state/snapshot-manager';
 import { logger } from '../utils/logger';
@@ -10,7 +10,12 @@ export class KafkaConsumerManager {
   private snapshotManager: SnapshotManager;
   private isRunning = false;
 
-  // Kafka topics
+  // In-memory state cache for batching
+  private stateCache = new Map<string, any>();
+  private flushTimer: NodeJS.Timeout | null = null;
+  private readonly FLUSH_INTERVAL_MS = 1000; // Flush every 1 second
+  private readonly BATCH_SIZE = 1000; // Process 1000 messages per batch
+
   private readonly topics = [
     'sensors.environmental',
     'sensors.traffic',
@@ -40,32 +45,41 @@ export class KafkaConsumerManager {
       },
     });
 
-    this.consumer = this.kafka.consumer({ groupId });
+    this.consumer = this.kafka.consumer({ 
+      groupId,
+      maxBytesPerPartition: 1048576, // 1MB per partition
+      sessionTimeout: 30000,
+    });
   }
 
-  /**
-   * Connect and start consuming messages
-   */
   async start(): Promise<void> {
     try {
       await this.consumer.connect();
       logger.info('Kafka consumer connected');
 
-      // Subscribe to all topics
       for (const topic of this.topics) {
         await this.consumer.subscribe({ topic, fromBeginning: false });
         logger.info(`Subscribed to topic: ${topic}`);
       }
 
+      // Load initial state into cache
+      await this.loadStateToCache();
+
+      // Start periodic flush timer
+      this.startFlushTimer();
+
       this.isRunning = true;
 
+      // Use eachBatch for high-throughput processing
       await this.consumer.run({
-        eachMessage: async (payload: EachMessagePayload) => {
-          await this.handleMessage(payload);
+        autoCommit: false, // Manual commit for better control
+        partitionsConsumedConcurrently: 3, // Process 3 partitions in parallel
+        eachBatch: async (payload: EachBatchPayload) => {
+          await this.handleBatch(payload);
         },
       });
 
-      logger.info('Kafka consumer started and running');
+      logger.info('Kafka consumer started in batch mode');
     } catch (error) {
       logger.error('Error starting Kafka consumer:', error);
       throw error;
@@ -73,82 +87,144 @@ export class KafkaConsumerManager {
   }
 
   /**
-   * Handle incoming Kafka messages
+   * Load initial state from Redis into memory cache
    */
-  private async handleMessage(payload: EachMessagePayload): Promise<void> {
-    const { topic, partition, message } = payload;
-
+  private async loadStateToCache(): Promise<void> {
     try {
-      if (!message.value) {
-        logger.warn('Received empty message', { topic, partition });
-        return;
+      const state = await this.redisManager.getCompleteState();
+      
+      // Cache districts
+      for (const district of state.districts) {
+        this.stateCache.set(`district:${district.districtId}`, district);
       }
-
-      const data = JSON.parse(message.value.toString());
-      logger.debug(`Processing message from ${topic}`, { partition, data });
-
-      // Route message to appropriate handler based on topic
-      switch (topic) {
-        case 'sensors.environmental':
-        case 'sensors.traffic':
-          await this.handleSensorData(data);
-          break;
-
-        case 'buildings.occupancy':
-          await this.handleBuildingOccupancy(data);
-          break;
-
-        case 'buildings.sensors':
-          await this.handleBuildingSensors(data);
-          break;
-
-        case 'weather.stations':
-          await this.handleWeatherData(data);
-          break;
-
-        case 'traffic.graph':
-          await this.handleTrafficGraph(data);
-          break;
-
-        case 'transport.gps':
-        case 'transport.stations':
-          await this.handlePublicTransport(data);
-          break;
-
-        case 'emergency.incidents':
-          await this.handleEmergencyIncident(data);
-          break;
-
-        default:
-          logger.warn(`Unknown topic: ${topic}`);
-      }
-
-      // Increment change counter for snapshot triggering
-      await this.snapshotManager.incrementChangeCounter(
-        () => this.redisManager.getCompleteState()
-      );
-
+      
+      // Cache shared state
+      this.stateCache.set('publicTransport', state.publicTransport);
+      this.stateCache.set('emergencyServices', state.emergencyServices);
+      
+      logger.info(`Loaded state to cache: ${this.stateCache.size} entries`);
     } catch (error) {
-      logger.error(`Error processing message from ${topic}:`, error);
+      logger.error('Error loading state to cache:', error);
     }
   }
 
   /**
-   * Handle sensor data updates
+   * Handle batch of messages with parallel processing per district
    */
-  private async handleSensorData(data: any): Promise<void> {
-    const { districtId, sensorId, type, value, unit, status, lastUpdated, location, metadata } = data;
-
-    if (!districtId || !sensorId) {
-      logger.warn('Missing districtId or sensorId in sensor data', data);
-      return;
+  private async handleBatch(payload: EachBatchPayload): Promise<void> {
+    const { batch, resolveOffset, heartbeat, commitOffsetsIfNecessary } = payload;
+    
+    try {
+      const startTime = Date.now();
+      
+      // Group messages by district/category for sequential processing within group
+      const messageGroups = this.groupMessages(batch.messages, batch.topic);
+      
+      // Process each group in parallel (safe because different districts)
+      await Promise.all(
+        Array.from(messageGroups.entries()).map(async ([groupKey, messages]) => {
+          for (const message of messages) {
+            try {
+              const data = JSON.parse(message.value!.toString());
+              await this.processMessageInMemory(batch.topic, data);
+              
+              // Resolve offset for each processed message
+              resolveOffset(message.offset);
+            } catch (error) {
+              logger.error(`Error processing message in group ${groupKey}:`, error);
+            }
+          }
+          
+          // Send heartbeat periodically
+          await heartbeat();
+        })
+      );
+      
+      // Commit offsets
+      await commitOffsetsIfNecessary();
+      
+      const duration = Date.now() - startTime;
+      logger.info(`Processed batch: ${batch.messages.length} messages in ${duration}ms (${Math.round(batch.messages.length / (duration / 1000))} msg/s)`);
+      
+    } catch (error) {
+      logger.error('Error handling batch:', error);
     }
+  }
 
-    const district = await this.redisManager.getDistrictState(districtId);
+  /**
+   * Group messages by district to avoid race conditions
+   */
+  private groupMessages(messages: any[], topic: string): Map<string, any[]> {
+    const groups = new Map<string, any[]>();
+    
+    for (const message of messages) {
+      if (!message.value) continue;
+      
+      try {
+        const data = JSON.parse(message.value.toString());
+        const groupKey = data.districtId || 'shared'; // Shared for publicTransport, emergency
+        
+        if (!groups.has(groupKey)) {
+          groups.set(groupKey, []);
+        }
+        groups.get(groupKey)!.push(message);
+      } catch (error) {
+        logger.error('Error parsing message:', error);
+      }
+    }
+    
+    return groups;
+  }
+
+  /**
+   * Process message updates in memory cache (no Redis I/O)
+   */
+  private async processMessageInMemory(topic: string, data: any): Promise<void> {
+    switch (topic) {
+      case 'sensors.environmental':
+      case 'sensors.traffic':
+        this.updateSensorInCache(data);
+        break;
+
+      case 'buildings.occupancy':
+        this.updateBuildingOccupancyInCache(data);
+        break;
+
+      case 'buildings.sensors':
+        this.updateSensorInCache(data);
+        break;
+
+      case 'weather.stations':
+        this.updateWeatherInCache(data);
+        break;
+
+      case 'traffic.graph':
+        this.updateTrafficGraphInCache(data);
+        break;
+
+      case 'transport.gps':
+      case 'transport.stations':
+        this.updatePublicTransportInCache(data);
+        break;
+
+      case 'emergency.incidents':
+        this.updateEmergencyInCache(data);
+        break;
+    }
+  }
+
+  /**
+   * Update sensor in memory cache
+   */
+  private updateSensorInCache(data: any): void {
+    const { districtId, sensorId, type, value, unit, status, lastUpdated, location, metadata } = data;
+    if (!districtId || !sensorId) return;
+
+    const cacheKey = `district:${districtId}`;
+    let district = this.stateCache.get(cacheKey);
 
     if (!district) {
-      // Create new district
-      await this.redisManager.updateDistrictState({
+      district = {
         districtId,
         name: `District ${districtId}`,
         location: {
@@ -156,141 +232,98 @@ export class KafkaConsumerManager {
           centerLongitude: location?.longitude || 0,
           boundaries: { north: 0, south: 0, east: 0, west: 0 },
         },
-        sensors: [{
-          sensorId,
-          type,
-          value,
-          unit,
-          status: status || 'active',
-          lastUpdated: new Date(lastUpdated || Date.now()),
-          location,
-          metadata,
-        }],
+        sensors: [],
         buildings: [],
         weatherStations: [],
         districtGraph: { nodes: [], edges: [] },
-      });
-    } else {
-      // Update existing district
-      const sensorIndex = district.sensors.findIndex(s => s.sensorId === sensorId);
-
-      if (sensorIndex !== -1) {
-        district.sensors[sensorIndex] = {
-          ...district.sensors[sensorIndex],
-          value,
-          status: status || district.sensors[sensorIndex].status,
-          lastUpdated: new Date(lastUpdated || Date.now()),
-          ...(location && { location }),
-          ...(metadata && { metadata }),
-        };
-      } else {
-        district.sensors.push({
-          sensorId,
-          type,
-          value,
-          unit,
-          status: status || 'active',
-          lastUpdated: new Date(lastUpdated || Date.now()),
-          location,
-          metadata,
-        });
-      }
-
-      await this.redisManager.updateDistrictState(district);
+      };
+      this.stateCache.set(cacheKey, district);
     }
 
-    logger.debug(`Updated sensor ${sensorId} in district ${districtId}`);
+    const sensorIndex = district.sensors.findIndex((s: any) => s.sensorId === sensorId);
+
+    if (sensorIndex !== -1) {
+      district.sensors[sensorIndex] = {
+        ...district.sensors[sensorIndex],
+        value,
+        status: status || district.sensors[sensorIndex].status,
+        lastUpdated: new Date(lastUpdated || Date.now()),
+        ...(location && { location }),
+        ...(metadata && { metadata }),
+      };
+    } else {
+      district.sensors.push({
+        sensorId,
+        type,
+        value,
+        unit,
+        status: status || 'active',
+        lastUpdated: new Date(lastUpdated || Date.now()),
+        location,
+        metadata,
+      });
+    }
   }
 
   /**
-   * Handle building occupancy updates
+   * Update building occupancy in cache
    */
-  private async handleBuildingOccupancy(data: any): Promise<void> {
+  private updateBuildingOccupancyInCache(data: any): void {
     const { districtId, buildingId, currentOccupancy, totalCapacity } = data;
+    if (!districtId || !buildingId) return;
 
-    if (!districtId || !buildingId) {
-      logger.warn('Missing districtId or buildingId in building occupancy data', data);
-      return;
-    }
-
-    const district = await this.redisManager.getDistrictState(districtId);
+    const district = this.stateCache.get(`district:${districtId}`);
     if (!district) return;
 
-    const buildingIndex = district.buildings.findIndex(b => b.buildingId === buildingId);
-
+    const buildingIndex = district.buildings.findIndex((b: any) => b.buildingId === buildingId);
     if (buildingIndex !== -1) {
       district.buildings[buildingIndex].currentOccupancy = currentOccupancy;
       district.buildings[buildingIndex].occupancyRate = currentOccupancy / totalCapacity;
-      await this.redisManager.updateDistrictState(district);
-      logger.debug(`Updated building occupancy ${buildingId} in district ${districtId}`);
     }
   }
 
   /**
-   * Handle building sensor updates
+   * Update weather station in cache
    */
-  private async handleBuildingSensors(data: any): Promise<void> {
-    // Similar to handleSensorData but for building-embedded sensors
-    await this.handleSensorData(data);
-  }
-
-  /**
-   * Handle weather station data
-   */
-  private async handleWeatherData(data: any): Promise<void> {
+  private updateWeatherInCache(data: any): void {
     const { districtId, stationId, readings, status, lastUpdated } = data;
+    if (!districtId || !stationId) return;
 
-    if (!districtId || !stationId) {
-      logger.warn('Missing districtId or stationId in weather data', data);
-      return;
-    }
-
-    const district = await this.redisManager.getDistrictState(districtId);
+    const district = this.stateCache.get(`district:${districtId}`);
     if (!district) return;
 
-    const stationIndex = district.weatherStations.findIndex(ws => ws.stationId === stationId);
-
+    const stationIndex = district.weatherStations.findIndex((ws: any) => ws.stationId === stationId);
     if (stationIndex !== -1) {
       district.weatherStations[stationIndex].readings = readings;
       district.weatherStations[stationIndex].status = status || district.weatherStations[stationIndex].status;
       district.weatherStations[stationIndex].lastUpdated = new Date(lastUpdated || Date.now());
-      await this.redisManager.updateDistrictState(district);
-      logger.debug(`Updated weather station ${stationId} in district ${districtId}`);
     }
   }
 
   /**
-   * Handle traffic graph updates
+   * Update traffic graph in cache
    */
-  private async handleTrafficGraph(data: any): Promise<void> {
+  private updateTrafficGraphInCache(data: any): void {
     const { districtId, edgeId, trafficConditions } = data;
+    if (!districtId || !edgeId) return;
 
-    if (!districtId || !edgeId) {
-      logger.warn('Missing districtId or edgeId in traffic graph data', data);
-      return;
-    }
-
-    const district = await this.redisManager.getDistrictState(districtId);
+    const district = this.stateCache.get(`district:${districtId}`);
     if (!district) return;
 
-    const edgeIndex = district.districtGraph.edges.findIndex(e => e.edgeId === edgeId);
-
+    const edgeIndex = district.districtGraph.edges.findIndex((e: any) => e.edgeId === edgeId);
     if (edgeIndex !== -1) {
       district.districtGraph.edges[edgeIndex].trafficConditions = trafficConditions;
       district.districtGraph.edges[edgeIndex].lastUpdated = new Date();
-      await this.redisManager.updateDistrictState(district);
-      logger.debug(`Updated traffic edge ${edgeId} in district ${districtId}`);
     }
   }
 
   /**
-   * Handle public transport updates
+   * Update public transport in cache
    */
-  private async handlePublicTransport(data: any): Promise<void> {
-    const currentData = await this.redisManager.getPublicTransport() || { buses: [], stations: [] };
+  private updatePublicTransportInCache(data: any): void {
+    let currentData = this.stateCache.get('publicTransport') || { buses: [], stations: [] };
 
     if (data.busId) {
-      // Update bus
       const busIndex = currentData.buses.findIndex((b: any) => b.busId === data.busId);
       if (busIndex !== -1) {
         currentData.buses[busIndex] = { ...currentData.buses[busIndex], ...data };
@@ -298,7 +331,6 @@ export class KafkaConsumerManager {
         currentData.buses.push(data);
       }
     } else if (data.stationId) {
-      // Update station
       const stationIndex = currentData.stations.findIndex((s: any) => s.stationId === data.stationId);
       if (stationIndex !== -1) {
         currentData.stations[stationIndex] = { ...currentData.stations[stationIndex], ...data };
@@ -307,18 +339,16 @@ export class KafkaConsumerManager {
       }
     }
 
-    await this.redisManager.updatePublicTransport(currentData);
-    logger.debug('Updated public transport data');
+    this.stateCache.set('publicTransport', currentData);
   }
 
   /**
-   * Handle emergency incident updates
+   * Update emergency services in cache
    */
-  private async handleEmergencyIncident(data: any): Promise<void> {
-    const currentData = await this.redisManager.getEmergencyServices() || { incidents: [], units: [] };
+  private updateEmergencyInCache(data: any): void {
+    let currentData = this.stateCache.get('emergencyServices') || { incidents: [], units: [] };
 
     if (data.incidentId) {
-      // Update incident
       const incidentIndex = currentData.incidents.findIndex((i: any) => i.incidentId === data.incidentId);
       if (incidentIndex !== -1) {
         currentData.incidents[incidentIndex] = { ...currentData.incidents[incidentIndex], ...data };
@@ -326,7 +356,6 @@ export class KafkaConsumerManager {
         currentData.incidents.push(data);
       }
     } else if (data.unitId) {
-      // Update unit
       const unitIndex = currentData.units.findIndex((u: any) => u.unitId === data.unitId);
       if (unitIndex !== -1) {
         currentData.units[unitIndex] = { ...currentData.units[unitIndex], ...data };
@@ -335,24 +364,79 @@ export class KafkaConsumerManager {
       }
     }
 
-    await this.redisManager.updateEmergencyServices(currentData);
-    logger.debug('Updated emergency services data');
+    this.stateCache.set('emergencyServices', currentData);
   }
 
   /**
-   * Stop the consumer
+   * Start periodic timer to flush cache to Redis
    */
+  private startFlushTimer(): void {
+    this.flushTimer = setInterval(async () => {
+      await this.flushCacheToRedis();
+    }, this.FLUSH_INTERVAL_MS);
+
+    logger.info(`Started flush timer (interval: ${this.FLUSH_INTERVAL_MS}ms)`);
+  }
+
+  /**
+   * Flush in-memory cache to Redis in bulk
+   */
+  private async flushCacheToRedis(): Promise<void> {
+    if (this.stateCache.size === 0) return;
+
+    const startTime = Date.now();
+
+    try {
+      // Use Redis pipeline for bulk writes
+      const pipeline = this.redisManager.createPipeline();
+      let operationCount = 0;
+
+      for (const [key, value] of this.stateCache.entries()) {
+        if (key.startsWith('district:')) {
+          const districtId = key.replace('district:', '');
+          pipeline.set(`district:${districtId}:state`, JSON.stringify(value));
+          operationCount++;
+        } else if (key === 'publicTransport') {
+          pipeline.set('city:publicTransport', JSON.stringify(value));
+          operationCount++;
+        } else if (key === 'emergencyServices') {
+          pipeline.set('city:emergencyServices', JSON.stringify(value));
+          operationCount++;
+        }
+      }
+
+      await pipeline.exec();
+
+      const duration = Date.now() - startTime;
+      logger.info(`Flushed ${operationCount} keys to Redis in ${duration}ms`);
+
+      // Trigger snapshot check
+      await this.snapshotManager.incrementChangeCounter(
+        () => this.redisManager.getCompleteState(),
+        operationCount
+      );
+
+    } catch (error) {
+      logger.error('Error flushing cache to Redis:', error);
+    }
+  }
+
   async stop(): Promise<void> {
     if (this.isRunning) {
+      // Stop flush timer
+      if (this.flushTimer) {
+        clearInterval(this.flushTimer);
+      }
+
+      // Final flush
+      await this.flushCacheToRedis();
+
       await this.consumer.disconnect();
       this.isRunning = false;
       logger.info('Kafka consumer stopped');
     }
   }
 
-  /**
-   * Check if Kafka consumer is connected
-   */
   isConnected(): boolean {
     return this.isRunning;
   }

@@ -23,10 +23,10 @@ export class SnapshotManager {
       const dbName = process.env.MONGODB_DATABASE || 'digital_twin';
       this.db = this.client.db(dbName);
       this.collection = this.db.collection('state_snapshots');
-      
+
       // Create index on timestamp
       await this.collection.createIndex({ timestamp: -1 });
-      
+
       logger.info('Connected to MongoDB');
     } catch (error) {
       logger.error('MongoDB connection error:', error);
@@ -51,7 +51,7 @@ export class SnapshotManager {
 
       await this.collection.insertOne(snapshot as any);
       logger.info('Snapshot saved successfully', { timestamp: snapshot.snapshotTimestamp });
-      
+
       // Reset change counter
       this.changeCounter = 0;
     } catch (error) {
@@ -143,18 +143,19 @@ export class SnapshotManager {
   /**
    * Increment change counter and trigger snapshot if threshold reached
    */
-  async incrementChangeCounter(getStateCallback: () => Promise<City>): Promise<void> {
-    this.changeCounter++;
-    
+  async incrementChangeCounter(
+    getStateFn: () => Promise<City>,
+    changeCount: number = 1
+  ): Promise<void> {
+    this.changeCounter += changeCount;
+
     const minChanges = parseInt(process.env.SNAPSHOT_MIN_CHANGES || '100');
-    
+
     if (this.changeCounter >= minChanges) {
-      logger.info(`Change threshold reached (${this.changeCounter} changes), triggering snapshot`);
-      const state = await getStateCallback();
+      const state = await getStateFn();
       await this.saveSnapshot(state);
     }
   }
-
   /**
    * Check if MongoDB is connected
    */

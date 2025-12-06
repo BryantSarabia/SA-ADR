@@ -208,6 +208,10 @@ export class RedisStateManager {
     await this.updateDistrictState(district);
   }
 
+  createPipeline(): any {
+  return this.client.pipeline();
+}
+
   /**
    * Check if Redis is connected
    */
