@@ -157,7 +157,7 @@ services:
       args:
         VITE_STATE_MANAGER_API_URL: http://localhost:3000
         VITE_STATE_MANAGER_WS_URL: ws://localhost:3001
-        VITE_NOTIFICATION_MANAGER_API_URL: http://localhost:3002
+        VITE_NOTIFICATION_MANAGER_API_URL: http://localhost:3002/api
     container_name: dt-dashboard
     depends_on:
       - state-manager

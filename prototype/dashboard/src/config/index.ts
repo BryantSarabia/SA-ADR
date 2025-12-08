@@ -4,7 +4,7 @@ export const config = {
   stateManagerWsUrl: import.meta.env.VITE_STATE_MANAGER_WS_URL || 'ws://localhost:3001',
   
   // Notification Manager API
-  notificationManagerUrl: import.meta.env.VITE_NOTIFICATION_MANAGER_API_URL || 'http://localhost:3002',
+  notificationManagerUrl: import.meta.env.VITE_NOTIFICATION_MANAGER_API_URL || 'http://localhost:3002/api',
   
   // Polling intervals (milliseconds)
   notificationPollInterval: 5000, // 5 seconds
