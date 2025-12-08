@@ -653,26 +653,6 @@ curl http://localhost:3000/api/snapshots/latest
 
 ---
 
-## Performance Considerations
-
-### Response Times
-- Health check: < 10ms
-- State queries: 50-200ms (depending on Redis cache hit)
-- Snapshot queries: 100-500ms (MongoDB query)
-
-### Caching Strategy
-The API uses Redis for in-memory caching with:
-- 1-second flush interval from Kafka consumer
-- Automatic invalidation on state updates
-- Fast read access for all queries
-
-### Rate Limiting
-Currently no rate limiting is implemented. Consider implementing rate limiting in production:
-- Recommended: 100 requests per minute per client
-- Use packages like `express-rate-limit`
-
----
-
 ## WebSocket Alternative
 
 For real-time updates, consider using the WebSocket endpoint instead of polling:
@@ -690,43 +670,3 @@ ws.onmessage = (event) => {
 ```
 
 ---
-
-## Monitoring and Logging
-
-The API logs all requests with:
-- HTTP method and path
-- Response status code
-- Response time
-- Error details (if applicable)
-
-**Log Format:**
-```
-[2024-12-08T10:30:00.000Z] GET /api/state - 200 OK (120ms)
-```
-
----
-
-## Security Recommendations
-
-For production deployment:
-
-1. **Enable HTTPS**: Use TLS certificates
-2. **Add Authentication**: Implement JWT or API keys
-3. **Rate Limiting**: Prevent abuse
-4. **Input Validation**: Validate all parameters
-5. **CORS Configuration**: Restrict allowed origins
-6. **Error Messages**: Don't expose sensitive information
-
----
-
-## Support
-
-For issues or questions:
-- Check the logs for detailed error messages
-- Verify Redis and MongoDB connections
-- Ensure Kafka consumer is running
-- Check network connectivity
-
----
-
-**Last Updated:** December 8, 2024
