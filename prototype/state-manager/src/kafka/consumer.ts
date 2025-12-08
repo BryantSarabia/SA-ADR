@@ -12,9 +12,9 @@ export class KafkaConsumerManager {
 
   // In-memory state cache for batching
   private stateCache = new Map<string, any>();
-  private flushTimer: NodeJS.Timeout | null = null;
+  private flushTimer: ReturnType<typeof setInterval> | null = null;
   private readonly FLUSH_INTERVAL_MS = 1000; // Flush every 1 second
-  private readonly BATCH_SIZE = 1000; // Process 1000 messages per batch
+  // private readonly _BATCH_SIZE = 1000; // Process 1000 messages per batch
 
   private readonly topics = [
     'sensors.environmental',
@@ -154,7 +154,7 @@ export class KafkaConsumerManager {
   /**
    * Group messages by district to avoid race conditions
    */
-  private groupMessages(messages: any[], topic: string): Map<string, any[]> {
+  private groupMessages(messages: any[], _topic: string): Map<string, any[]> {
     const groups = new Map<string, any[]>();
     
     for (const message of messages) {

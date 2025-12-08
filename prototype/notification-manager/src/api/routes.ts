@@ -149,7 +149,8 @@ export function createRoutes() {
   router.get('/health', async (_req: Request, res: Response) => {
     try {
       // Check MongoDB connection
-      const isConnected = await NotificationModel.db.db.admin().ping();
+      const mongoState = NotificationModel.db.readyState;
+      const isConnected = mongoState === 1;
 
       res.json({
         status: 'healthy',

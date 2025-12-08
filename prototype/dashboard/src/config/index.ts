@@ -1,10 +1,10 @@
 export const config = {
   // State Manager API
-  stateManagerUrl: import.meta.env.VITE_STATE_MANAGER_URL || 'http://localhost:3001',
+  stateManagerUrl: import.meta.env.VITE_STATE_MANAGER_API_URL || 'http://localhost:3000',
   stateManagerWsUrl: import.meta.env.VITE_STATE_MANAGER_WS_URL || 'ws://localhost:3001',
   
   // Notification Manager API
-  notificationManagerUrl: import.meta.env.VITE_NOTIFICATION_MANAGER_URL || 'http://localhost:3003',
+  notificationManagerUrl: import.meta.env.VITE_NOTIFICATION_MANAGER_API_URL || 'http://localhost:3002',
   
   // Polling intervals (milliseconds)
   notificationPollInterval: 5000, // 5 seconds

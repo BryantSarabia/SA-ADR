@@ -5,7 +5,7 @@
 ### Prerequisites
 - Docker and Docker Compose installed
 - Node.js 20+ (for local development)
-- Ports available: 3000 (API), 3001 (WebSocket), 6379 (Redis), 27017 (MongoDB), 9092/9093 (Kafka)
+- Ports available: 3000 (API), 3001 (WebSocket), 3002 (Notifications), 8080 (Dashboard), 6379 (Redis), 27017 (MongoDB), 9092/9093 (Kafka)
 
 ### Start All Services
 
@@ -22,19 +22,28 @@ This will start:
 - **MongoDB** (port 27017) - Historical snapshots
 - **Zookeeper** (port 2181) - Kafka coordination
 - **Kafka** (ports 9092/9093) - Message broker
-- **State Manager** (ports 3000/3001) - Main service
+- **State Manager** (ports 3000/3001) - Main service with API and WebSocket
+- **Notification Manager** (port 3002) - Notification service
+- **Dashboard** (port 8080) - Web UI with real-time visualization
 - **Data Producer** - Mock data generator
 
 ### Access the Services
 
-**API Endpoints:**
+**Dashboard UI:**
+- Open in browser: http://localhost:8080
+
+**State Manager API:**
 - Health: http://localhost:3000/health
 - Complete State: http://localhost:3000/state
 - Districts: http://localhost:3000/state/districts
-- Specific District: http://localhost:3000/state/districts/DIST-001
+- Specific District: http://localhost:3000/state/districts/centro
+
+**Notification Manager API:**
+- Health: http://localhost:3002/health
+- Notifications: http://localhost:3002/api/notifications
 
 **WebSocket:**
-- Connect to: ws://localhost:3001
+- State Updates: ws://localhost:3001
 
 ### View Logs
 
