@@ -53,12 +53,31 @@ export function DashboardPage() {
     };
   }, [setConnectionState, applyIncrementalUpdate]);
 
-  // Collect all entities from districts and city
-  const allSensors = cityState?.districts.flatMap((district) => district.sensors) || [];
-  const allBuildings = cityState?.districts.flatMap((district) => district.buildings) || [];
-  const allWeatherStations = cityState?.districts.flatMap((district) => district.weatherStations) || [];
-  const allRoadSegments = cityState?.cityGraph.edges || [];
-  const allBuses = cityState?.publicTransport.buses || [];
+  // Collect all entities from districts and city - memoized to prevent unnecessary re-renders
+  const allSensors = useMemo(
+    () => cityState?.districts.flatMap((district) => district.sensors) || [],
+    [cityState?.districts]
+  );
+  
+  const allBuildings = useMemo(
+    () => cityState?.districts.flatMap((district) => district.buildings) || [],
+    [cityState?.districts]
+  );
+  
+  const allWeatherStations = useMemo(
+    () => cityState?.districts.flatMap((district) => district.weatherStations) || [],
+    [cityState?.districts]
+  );
+  
+  const allRoadSegments = useMemo(
+    () => cityState?.cityGraph.edges || [],
+    [cityState?.cityGraph.edges]
+  );
+  
+  const allBuses = useMemo(
+    () => cityState?.publicTransport.buses || [],
+    [cityState?.publicTransport.buses]
+  );
 
   // Map controls state
   const [visibleLayers, setVisibleLayers] = useState<Record<LayerType, boolean>>({

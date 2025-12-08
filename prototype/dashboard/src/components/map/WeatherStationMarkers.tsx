@@ -1,3 +1,4 @@
+import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import type { WeatherStation } from '../../types';
 import { createLucideIcon } from '../../utils/leafletIcon';
@@ -20,7 +21,7 @@ const createWeatherIcon = (status: string) => {
   return createLucideIcon('cloud', { backgroundColor });
 };
 
-export function WeatherStationMarkers({ stations }: WeatherStationMarkersProps) {
+export const WeatherStationMarkers = React.memo(function WeatherStationMarkers({ stations }: WeatherStationMarkersProps) {
   return (
     <>
       {stations.map((station) => (
@@ -87,4 +88,4 @@ export function WeatherStationMarkers({ stations }: WeatherStationMarkersProps) 
       ))}
     </>
   );
-}
+});

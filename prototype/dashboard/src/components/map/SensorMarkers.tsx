@@ -1,3 +1,4 @@
+import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import type { Sensor } from '../../types';
@@ -21,7 +22,7 @@ const createSensorIcon = (status: string) => {
   return createLucideIcon('radio', { backgroundColor });
 };
 
-export function SensorMarkers({ sensors }: SensorMarkersProps) {
+export const SensorMarkers = React.memo(function SensorMarkers({ sensors }: SensorMarkersProps) {
   return (
     <MarkerClusterGroup>
       {sensors.filter(s => s.location).map((sensor) => (
@@ -72,4 +73,4 @@ export function SensorMarkers({ sensors }: SensorMarkersProps) {
       ))}
     </MarkerClusterGroup>
   );
-}
+});

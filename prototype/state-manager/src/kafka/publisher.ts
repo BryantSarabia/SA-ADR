@@ -90,6 +90,62 @@ export class StatePublisher {
   }
 
   /**
+   * Normalize state by removing timestamp fields that change frequently
+   * This prevents false positives in diff detection
+   */
+  private normalizeStateForDiff(state: City): any {
+    const normalized = JSON.parse(JSON.stringify(state));
+    
+    // Remove top-level timestamp
+    delete normalized.timestamp;
+    delete normalized.metadata?.lastUpdated;
+    
+    // Remove timestamps from districts and their entities
+    normalized.districts?.forEach((district: any) => {
+      delete district.lastUpdated;
+      
+      district.sensors?.forEach((sensor: any) => {
+        delete sensor.lastUpdated;
+      });
+      
+      district.buildings?.forEach((building: any) => {
+        delete building.lastUpdated;
+      });
+      
+      district.weatherStations?.forEach((station: any) => {
+        delete station.lastUpdated;
+      });
+    });
+    
+    // Remove timestamps from city graph edges
+    normalized.cityGraph?.edges?.forEach((edge: any) => {
+      delete edge.lastUpdated;
+      delete edge.trafficConditions?.lastUpdated;
+    });
+    
+    // Remove timestamps from public transport
+    normalized.publicTransport?.buses?.forEach((bus: any) => {
+      delete bus.lastUpdated;
+    });
+    
+    normalized.publicTransport?.stations?.forEach((station: any) => {
+      delete station.lastUpdated;
+    });
+    
+    // Remove timestamps from emergency services
+    normalized.emergencyServices?.incidents?.forEach((incident: any) => {
+      delete incident.reportedAt;
+      delete incident.lastUpdated;
+    });
+    
+    normalized.emergencyServices?.units?.forEach((unit: any) => {
+      delete unit.lastUpdated;
+    });
+    
+    return normalized;
+  }
+
+  /**
    * Start the state publisher
    */
   async start(): Promise<void> {
@@ -192,8 +248,12 @@ export class StatePublisher {
         return;
       }
 
-      // Calculate diff
-      const delta = this.diffPatcher.diff(this.lastPublishedState, currentState);
+      // Normalize states before diff to exclude timestamp fields
+      const normalizedPrevious = this.normalizeStateForDiff(this.lastPublishedState);
+      const normalizedCurrent = this.normalizeStateForDiff(currentState);
+
+      // Calculate diff on normalized states
+      const delta = this.diffPatcher.diff(normalizedPrevious, normalizedCurrent);
 
       // Skip if no changes
       if (!delta) {

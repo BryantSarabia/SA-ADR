@@ -1,3 +1,4 @@
+import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import type { Building } from '../../types';
@@ -7,7 +8,7 @@ interface BuildingMarkersProps {
   buildings: Building[];
 }
 
-export function BuildingMarkers({ buildings }: BuildingMarkersProps) {
+export const BuildingMarkers = React.memo(function BuildingMarkers({ buildings }: BuildingMarkersProps) {
   return (
     <MarkerClusterGroup>
       {buildings.map((building) => {
@@ -64,4 +65,4 @@ export function BuildingMarkers({ buildings }: BuildingMarkersProps) {
       })}
     </MarkerClusterGroup>
   );
-}
+});

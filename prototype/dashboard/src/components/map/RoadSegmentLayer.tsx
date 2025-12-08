@@ -1,3 +1,4 @@
+import React from 'react';
 import { Polyline, Popup } from 'react-leaflet';
 import type { Edge } from '../../types';
 
@@ -23,7 +24,7 @@ const getCongestionWidth = (congestionLevel: string): number => {
   return widths[congestionLevel.toLowerCase()] || 3;
 };
 
-export function RoadSegmentLayer({ edges }: RoadSegmentLayerProps) {
+export const RoadSegmentLayer = React.memo(function RoadSegmentLayer({ edges }: RoadSegmentLayerProps) {
   return (
     <>
       {edges.map((edge) => {
@@ -100,4 +101,4 @@ export function RoadSegmentLayer({ edges }: RoadSegmentLayerProps) {
       })}
     </>
   );
-}
+});

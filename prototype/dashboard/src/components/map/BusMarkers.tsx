@@ -1,3 +1,4 @@
+import React from 'react';
 import { Marker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import type { Bus } from '../../types';
@@ -21,7 +22,7 @@ const createBusIcon = (status: string) => {
   return createLucideIcon('bus', { backgroundColor });
 };
 
-export function BusMarkers({ buses }: BusMarkersProps) {
+export const BusMarkers = React.memo(function BusMarkers({ buses }: BusMarkersProps) {
   return (
     <MarkerClusterGroup>
       {buses.map((bus) => (
@@ -76,4 +77,4 @@ export function BusMarkers({ buses }: BusMarkersProps) {
       ))}
     </MarkerClusterGroup>
   );
-}
+});
