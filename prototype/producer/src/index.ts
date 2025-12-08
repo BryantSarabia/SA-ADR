@@ -9,6 +9,11 @@ class DataProducer {
   private intervalMs: number;
   private districts = ['DIST-001', 'DIST-002', 'DIST-003'];
 
+  // Real edge IDs from laquila-city-graph-overture.json (E-00000 to E-03458)
+  // Generating a sample pool for realistic traffic simulation
+  private edgeIds: string[] = [];
+  private roadSegmentIds: string[] = [];
+
   constructor() {
     const brokers = (process.env.KAFKA_BROKERS || 'localhost:9092').split(',');
     const clientId = process.env.KAFKA_CLIENT_ID || 'data-producer';
@@ -24,6 +29,25 @@ class DataProducer {
 
     this.producer = this.kafka.producer();
     this.intervalMs = parseInt(process.env.MESSAGE_INTERVAL_MS || '2000');
+
+    // Generate edge and road segment IDs (sample 500 edges from the full range)
+    this.generateEdgeIds();
+  }
+
+  /**
+   * Generate a sample pool of edge IDs from the full L'Aquila graph range (E-00000 to E-03458)
+   */
+  private generateEdgeIds(): void {
+    const maxEdgeId = 3458;
+    const sampleSize = 3458;
+    const step = Math.floor(maxEdgeId / sampleSize);
+
+    for (let i = 0; i < sampleSize; i++) {
+      const edgeNum = i * step;
+      const paddedNum = edgeNum.toString().padStart(5, '0');
+      this.edgeIds.push(`E-${paddedNum}`);
+      this.roadSegmentIds.push(`RS-${paddedNum}`);
+    }
   }
 
   async start(): Promise<void> {
@@ -91,8 +115,8 @@ class DataProducer {
                 status: 'active',
                 lastUpdated: new Date().toISOString(),
                 location: {
-                  latitude: 40.71 + Math.random() * 0.04,
-                  longitude: -74.00 + Math.random() * 0.02,
+                  latitude: 42.34 + Math.random() * 0.04,
+                  longitude: 13.39 + Math.random() * 0.06,
                 },
               }),
             },
@@ -116,8 +140,8 @@ class DataProducer {
                 status: 'active',
                 lastUpdated: new Date().toISOString(),
                 location: {
-                  latitude: 40.71 + Math.random() * 0.04,
-                  longitude: -74.00 + Math.random() * 0.02,
+                  latitude: 42.34 + Math.random() * 0.04,
+                  longitude: 13.39 + Math.random() * 0.06,
                 },
                 metadata: {
                   avgSpeed: 30 + Math.random() * 40,
@@ -214,7 +238,10 @@ class DataProducer {
     const messages = [];
 
     for (const districtId of this.districts) {
-      const edgeId = `EDGE-${districtId}-${Math.floor(Math.random() * 20)}`;
+      // Randomly select a real edge ID from the L'Aquila city graph
+      const randomIndex = Math.floor(Math.random() * this.edgeIds.length);
+      const edgeId = this.edgeIds[randomIndex];
+      const roadSegmentId = this.roadSegmentIds[randomIndex];
       const congestionLevels = ['light', 'moderate', 'heavy'];
 
       messages.push(
@@ -226,6 +253,7 @@ class DataProducer {
               value: JSON.stringify({
                 districtId,
                 edgeId,
+                roadSegmentId,
                 trafficConditions: {
                   averageSpeed: 20 + Math.random() * 40,
                   congestionLevel: congestionLevels[Math.floor(Math.random() * 3)],
@@ -258,8 +286,8 @@ class DataProducer {
                 busId: `BUS-${i + 1}`,
                 route: `Route-${i + 1}`,
                 location: {
-                  latitude: 40.71 + Math.random() * 0.04,
-                  longitude: -74.00 + Math.random() * 0.02,
+                  latitude: 42.34 + Math.random() * 0.04,
+                  longitude: 13.39 + Math.random() * 0.06,
                   currentStop: `STOP-${Math.floor(Math.random() * 20)}`,
                 },
                 speed: 10 + Math.random() * 40,
@@ -295,9 +323,9 @@ class DataProducer {
               type: incidentTypes[Math.floor(Math.random() * incidentTypes.length)],
               priority: priorities[Math.floor(Math.random() * priorities.length)],
               location: {
-                latitude: 40.71 + Math.random() * 0.04,
-                longitude: -74.00 + Math.random() * 0.02,
-                address: `${Math.floor(Math.random() * 999)} Main St`,
+                latitude: 42.34 + Math.random() * 0.04,
+                longitude: 13.39 + Math.random() * 0.06,
+                address: `${Math.floor(Math.random() * 999)} Via Roma`,
               },
               reportedAt: new Date().toISOString(),
               respondingUnits: [],

@@ -168,7 +168,9 @@ Ingests real-time data from multiple city systems, updates an in-memory cache, a
 **Data Format**:
 ```json
 {
+  "districtId": "DIST-001",
   "edgeId": "E-00015",
+  "roadSegmentId": "RS-00015",
   "trafficConditions": {
     "averageSpeed": 35.5,
     "congestionLevel": "moderate",
@@ -176,14 +178,22 @@ Ingests real-time data from multiple city systems, updates an in-memory cache, a
     "travelTime": 8.2,
     "incidents": []
   },
-  "lastUpdated": "2025-12-08T10:30:00.000Z"
+  "timestamp": "2025-12-08T10:30:00.000Z"
 }
 ```
 
+**Edge/Road Segment IDs**:
+- All `edgeId` and `roadSegmentId` values correspond to actual edges in the L'Aquila city graph
+- The L'Aquila graph contains 3,459 edges (E-00000 to E-03458) and 4,030 nodes (N-00000 to N-04029)
+- Road Segment IDs follow the format `RS-00000` to `RS-03458` (1:1 mapping with edge IDs)
+- Producer randomly selects from a sampled pool of 500 edges distributed across the full range
+- This sampling provides realistic traffic patterns while avoiding message overhead
+
 **Update Logic**:
-- Finds edge by `edgeId` in city graph
+- Finds edge by `edgeId` in city.trafficGraph.edges array
 - Replaces `trafficConditions` object
 - Updates `lastUpdated` timestamp
+- Traffic data applies to the entire city graph (not district-specific)
 
 ---
 
