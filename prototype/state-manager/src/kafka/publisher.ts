@@ -4,6 +4,34 @@ import { RedisStateManager } from '../state/redis-manager';
 import { City } from '../types';
 import { logger } from '../utils/logger';
 
+/**
+ * State Publisher - Publishes aggregated digital twin state to Kafka
+ * 
+ * ## Purpose
+ * Periodically publishes the complete city digital twin state and incremental updates
+ * to Kafka topics for consumption by visualization systems, analytics services, and
+ * external applications.
+ * 
+ * ## Published Topics
+ * 
+ * ### state.full (Every 60 seconds)
+ * Complete digital twin state snapshot including all districts, sensors, buildings,
+ * traffic graph, public transport, and emergency services.
+ * 
+ * ### state.incremental (Every 5 seconds)
+ * Delta/diff of state changes since last publish using jsondiffpatch format.
+ * Typically 80-95% smaller than full state for bandwidth optimization.
+ * 
+ * ## Data Flow
+ * 1. Retrieves complete state from Redis
+ * 2. Publishes full state periodically (every 60 seconds by default)
+ * 3. Calculates state diff between publishes using jsondiffpatch
+ * 4. Publishes incremental updates (every 5 seconds by default)
+ * 
+ * ## Configuration
+ * - FULL_STATE_PUBLISH_INTERVAL_MS: Full state interval (default: 60000ms)
+ * - INCREMENTAL_STATE_PUBLISH_INTERVAL_MS: Incremental interval (default: 5000ms)
+ */
 export class StatePublisher {
   private kafka: Kafka;
   private producer: Producer;
