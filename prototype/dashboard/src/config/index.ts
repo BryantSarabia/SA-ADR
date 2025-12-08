@@ -16,8 +16,8 @@ export const config = {
       lng: 13.3995,
     },
     zoom: 13,
-    minZoom: 10,
-    maxZoom: 18,
+    minZoom: 1,
+    maxZoom: 24,
   },
   
   // Feature flags

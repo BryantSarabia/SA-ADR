@@ -16,6 +16,9 @@ COPY src ./src
 # Build TypeScript
 RUN npm run build
 
+# Copy L'Aquila city graph data
+COPY src/state/laquila-city-graph-overture.json ./dist/state/
+
 # Production stage
 FROM node:20-alpine
 
