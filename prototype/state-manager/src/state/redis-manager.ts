@@ -9,8 +9,10 @@ export class RedisStateManager {
   private readonly publicTransportKey = 'city:publicTransport';
   private readonly emergencyServicesKey = 'city:emergencyServices';
   private readonly cityMetadataKey = 'city:metadata';
+  private snapshotManager: any = null;
 
-  constructor() {
+  constructor(snapshotManager?: any) {
+    this.snapshotManager = snapshotManager;
     this.client = new Redis({
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
@@ -31,10 +33,32 @@ export class RedisStateManager {
   }
 
   /**
-   * Initialize empty state
+   * Initialize state from latest MongoDB snapshot or create empty state
    */
   async initializeEmptyState(): Promise<void> {
-    logger.info('Initializing empty state in Redis');
+    logger.info('Initializing state in Redis');
+    
+    // Try to load latest snapshot from MongoDB
+    if (this.snapshotManager) {
+      try {
+        const latestSnapshot = await this.snapshotManager.getLatestSnapshot();
+        
+        if (latestSnapshot) {
+          logger.info('Found latest snapshot in MongoDB, restoring state...');
+          await this.restoreFromSnapshot(latestSnapshot);
+          logger.info('State restored from MongoDB snapshot successfully');
+          return;
+        } else {
+          logger.info('No snapshots found in MongoDB, initializing fresh state');
+        }
+      } catch (error) {
+        logger.error('Error loading snapshot from MongoDB:', error);
+        logger.info('Proceeding with fresh state initialization');
+      }
+    }
+    
+    // Initialize fresh state if no snapshot found
+    logger.info('Creating fresh state in Redis');
     
     // Set default city metadata
     await this.client.set(
@@ -53,7 +77,31 @@ export class RedisStateManager {
     // Load and initialize city graph from L'Aquila data
     await this.initializeCityGraph();
 
-    logger.info('Empty state initialized successfully');
+    logger.info('Fresh state initialized successfully');
+  }
+
+  /**
+   * Restore state from a snapshot
+   */
+  private async restoreFromSnapshot(snapshot: City): Promise<void> {
+    const pipeline = this.client.pipeline();
+    
+    // Restore city metadata
+    pipeline.set(this.cityMetadataKey, JSON.stringify(snapshot.metadata));
+    
+    // Restore districts
+    for (const district of snapshot.districts) {
+      pipeline.set(`${this.keyPrefix}${district.districtId}:state`, JSON.stringify(district));
+    }
+    
+    // Restore city-level data
+    pipeline.set(this.publicTransportKey, JSON.stringify(snapshot.publicTransport));
+    pipeline.set(this.emergencyServicesKey, JSON.stringify(snapshot.emergencyServices));
+    pipeline.set(this.cityGraphKey, JSON.stringify(snapshot.cityGraph));
+    
+    await pipeline.exec();
+    
+    logger.info(`Restored ${snapshot.districts.length} districts and city-level data from snapshot`);
   }
 
   /**

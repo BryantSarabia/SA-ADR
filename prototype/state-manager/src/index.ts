@@ -24,13 +24,13 @@ class StateManagerService {
     try {
       logger.info('Starting Digital Twin State Manager Service...');
 
-      // Initialize Redis
-      this.redisManager = new RedisStateManager();
-      await this.redisManager.initializeEmptyState();
-
-      // Initialize MongoDB
+      // Initialize MongoDB first
       this.snapshotManager = new SnapshotManager();
       await this.snapshotManager.connect();
+
+      // Initialize Redis with snapshot manager for state restoration
+      this.redisManager = new RedisStateManager(this.snapshotManager);
+      await this.redisManager.initializeEmptyState();
 
       // Start periodic snapshots
       this.snapshotManager.startPeriodicSnapshots(
