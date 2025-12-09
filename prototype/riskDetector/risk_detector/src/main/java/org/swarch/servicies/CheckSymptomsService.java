@@ -1,9 +1,11 @@
 package org.swarch.servicies;
 
+import org.swarch.Symptom;
+
 /**
  * CheckSymptomsService
  */
 public interface CheckSymptomsService {
 
-  Object checkSymptoms(Object dataToCheck);
+  Symptom checkSymptoms(Object dataToCheck);
 }
