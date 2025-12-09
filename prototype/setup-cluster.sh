@@ -8,33 +8,17 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}Starting Digital Twin Kubernetes Setup...${NC}"
 
-# Function to build docker image
-build_image() {
-    local name=$1
-    local tag=$2
-    local path=$3
-    local args=$4
-
-    echo -e "${BLUE}Building $name ($tag)...${NC}"
-    if [ -z "$args" ]; then
-        docker build -t $tag $path
-    else
-        docker build $args -t $tag $path
-    fi
-    echo -e "${GREEN}Successfully built $name${NC}"
-}
-
-# 1. Build Images
-echo -e "\n${BLUE}--- Step 1: Building Docker Images ---${NC}"
+# 1. Build Images locally
+echo -e "\n${BLUE}--- Step 1: Building Docker Images Locally ---${NC}"
 
 # State Manager
-build_image "State Manager" "digital-twin/state-manager:latest" "./state-manager" ""
+docker build -t digital-twin/state-manager:latest ./state-manager
 
 # Notification Manager
-build_image "Notification Manager" "digital-twin/notification-manager:latest" "./notification-manager" ""
+docker build -t digital-twin/notification-manager:latest ./notification-manager
 
 # Data Producer
-build_image "Data Producer" "digital-twin/data-producer:latest" "./producer" ""
+docker build -t digital-twin/data-producer:latest ./producer
 
 # Dashboard
 echo -e "${BLUE}Building Dashboard (digital-twin/dashboard:latest)...${NC}"
@@ -44,6 +28,17 @@ docker build \
   --build-arg VITE_NOTIFICATION_MANAGER_API_URL=http://localhost:3002/api \
   -t digital-twin/dashboard:latest ./dashboard
 echo -e "${GREEN}Successfully built Dashboard${NC}"
+
+# 2. Load Images into Minikube (if applicable)
+if [ "$(kubectl config current-context)" = "minikube" ]; then
+    echo -e "\n${BLUE}--- Step 1.5: Loading Images into Minikube ---${NC}"
+    echo "This may take a minute..."
+    minikube image load digital-twin/state-manager:latest
+    minikube image load digital-twin/notification-manager:latest
+    minikube image load digital-twin/data-producer:latest
+    minikube image load digital-twin/dashboard:latest
+    echo -e "${GREEN}Images loaded into Minikube${NC}"
+fi
 
 # 2. Apply Manifests
 echo -e "\n${BLUE}--- Step 2: Deploying to Kubernetes ---${NC}"

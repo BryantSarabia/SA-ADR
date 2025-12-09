@@ -15,7 +15,7 @@ spec:
       containers:
         - name: data-producer
           image: digital-twin/data-producer:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           envFrom:
             - configMapRef:
                 name: digital-twin-config

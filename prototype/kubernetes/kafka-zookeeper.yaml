@@ -80,13 +80,13 @@ spec:
               value: "1"
             - name: KAFKA_ZOOKEEPER_CONNECT
               value: "zookeeper:2181"
-            # In K8s, we need to be careful with advertised listeners.
-            # For simplicity in this dev setup, we'll focus on internal cluster access on 9092.
-            # Hostname 'kafka' works because of the Service.
+            # Explicitly define listeners to avoid "port is deprecated" error
+            - name: KAFKA_LISTENERS
+              value: "PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9093"
             - name: KAFKA_ADVERTISED_LISTENERS
-              value: "PLAINTEXT://kafka:9092"
+              value: "PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093"
             - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-              value: "PLAINTEXT:PLAINTEXT"
+              value: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
             - name: KAFKA_INTER_BROKER_LISTENER_NAME
               value: "PLAINTEXT"
             - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
@@ -95,6 +95,8 @@ spec:
               value: "true"
             - name: KAFKA_NUM_PARTITIONS
               value: "3"
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xmx512M -Xms512M"
           livenessProbe:
             exec:
               command:

@@ -33,7 +33,7 @@ spec:
       containers:
         - name: state-manager
           image: digital-twin/state-manager:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           ports:
             - containerPort: 3000
             - containerPort: 3001
