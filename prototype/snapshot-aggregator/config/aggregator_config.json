@@ -1,0 +1,24 @@
+{
+    "snapshot_interval_seconds": 10,
+    "state_ttl_seconds": 30,
+    "kafka": {
+        "bootstrap_servers": "kafka:29092",
+        "consumer_topics": {
+            "city_speed": "city-speed-sensors",
+            "city_weather": "city-weather-sensors",
+            "city_camera": "city-camera-sensors",
+            "vehicles": "vehicles-telemetry",
+            "buildings": "buildings-monitoring"
+        },
+        "producer_topic": "city-digital-twin-state",
+        "consumer_group": "snapshot-aggregator-group"
+    },
+    "city": {
+        "cityId": "laquila-dt-001",
+        "name": "L'Aquila Digital Twin",
+        "version": "1.0"
+    },
+    "logging": {
+        "level": "INFO"
+    }
+}

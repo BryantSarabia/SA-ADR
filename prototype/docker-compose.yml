@@ -1,1 +1,219 @@
 services:
+  # Zookeeper - Kafka coordinator
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: ems-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - ems-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka - Event Bus
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: ems-kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "29094:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:29094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - ems-network
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:29094", "--list"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  # InfluxDB - Time Series Database (with all buckets)
+  influxdb:
+    image: influxdb:2.7
+    container_name: ems-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: adminpassword
+      DOCKER_INFLUXDB_INIT_ORG: emergency-mgmt
+      DOCKER_INFLUXDB_INIT_BUCKET: city_metrics
+      DOCKER_INFLUXDB_INIT_RETENTION: 30d
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ems-super-secret-token-12345
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - ./init-influx.sh:/docker-entrypoint-initdb.d/init-influx.sh
+    networks:
+      - ems-network
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # === SIMULATORS ===
+  
+  # City Simulator - Districts and edges sensors
+  city-simulator:
+    build:
+      context: .
+      dockerfile: ./city-simulator/Dockerfile
+    container_name: ems-city
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_SPEED: city-speed-sensors
+      KAFKA_TOPIC_WEATHER: city-weather-sensors
+      KAFKA_TOPIC_CAMERA: city-camera-sensors
+      CITY_CONFIG_FILE: /app/config/city_config.json
+    networks:
+      - ems-network
+    restart: unless-stopped
+
+  # Vehicles Simulator - Vehicle tracking and monitoring
+  vehicles-simulator:
+    build:
+      context: .
+      dockerfile: ./vehicles-simulator/Dockerfile
+    container_name: ems-vehicles
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_VEHICLES: vehicles-telemetry
+      VEHICLES_CONFIG_FILE: /app/config/vehicles.json
+    networks:
+      - ems-network
+    restart: unless-stopped
+
+  # Buildings Simulator - Building safety and environmental monitoring
+  buildings-simulator:
+    build:
+      context: .
+      dockerfile: ./buildings-simulator/Dockerfile
+    container_name: ems-buildings
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_BUILDINGS: buildings-monitoring
+      BUILDINGS_CONFIG_FILE: /app/config/buildings.json
+    networks:
+      - ems-network
+    restart: unless-stopped
+
+  # === MONITORS ===
+
+  # City Monitor - Processes city sensor data
+  city-monitor:
+    build:
+      context: .
+      dockerfile: ./city-monitor/Dockerfile
+    container_name: ems-city-monitor
+    depends_on:
+      kafka:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_SPEED: city-speed-sensors
+      KAFKA_TOPIC_WEATHER: city-weather-sensors
+      KAFKA_TOPIC_CAMERA: city-camera-sensors
+      KAFKA_GROUP_ID: city-monitor-group
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: ems-super-secret-token-12345
+      INFLUXDB_ORG: emergency-mgmt
+      INFLUXDB_BUCKET: city_metrics
+    networks:
+      - ems-network
+    restart: unless-stopped
+
+  # Vehicles Monitor - Processes vehicle tracking data
+  vehicles-monitor:
+    build:
+      context: .
+      dockerfile: ./vehicles-monitor/Dockerfile
+    container_name: ems-vehicles-monitor
+    depends_on:
+      kafka:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_VEHICLES: vehicles-telemetry
+      KAFKA_GROUP_ID: vehicles-monitor-group
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: ems-super-secret-token-12345
+      INFLUXDB_ORG: emergency-mgmt
+      INFLUXDB_BUCKET: vehicles_metrics
+    networks:
+      - ems-network
+    restart: unless-stopped
+
+  # Buildings Monitor - Processes building sensor data
+  buildings-monitor:
+    build:
+      context: .
+      dockerfile: ./buildings-monitor/Dockerfile
+    container_name: ems-buildings-monitor
+    depends_on:
+      kafka:
+        condition: service_healthy
+      influxdb:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_TOPIC_BUILDINGS: buildings-monitoring
+      KAFKA_GROUP_ID: buildings-monitor-group
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: ems-super-secret-token-12345
+      INFLUXDB_ORG: emergency-mgmt
+      INFLUXDB_BUCKET: buildings_metrics
+    networks:
+      - ems-network
+    restart: unless-stopped
+
+  # === AGGREGATOR ===
+
+  # Snapshot Aggregator - Aggregates streaming data into periodic snapshots
+  snapshot-aggregator:
+    build:
+      context: .
+      dockerfile: ./snapshot-aggregator/Dockerfile
+    container_name: ems-snapshot-aggregator
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SNAPSHOT_INTERVAL: 10
+      STATE_TTL: 30
+    networks:
+      - ems-network
+    restart: unless-stopped
+
+networks:
+  ems-network:
+    driver: bridge
+
+volumes:
+  influxdb-data:
