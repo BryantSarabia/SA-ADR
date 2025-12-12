@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: digital-twin-config
+data:
+  # General
+  NODE_ENV: "development"
+  LOG_LEVEL: "info"
+
+  # Redis
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+
+  # MongoDB
+  MONGODB_URI_STATE: "mongodb://mongodb-state:27017" # URI components might need to be constructed in app or passed as full URI
+  MONGODB_URI_NOTIFICATIONS: "mongodb://mongodb-notifications:27017"
+  MONGODB_DATABASE_STATE: "digital_twin"
+  MONGODB_DATABASE_NOTIFICATIONS: "notifications"
+
+  # Kafka
+  KAFKA_BROKERS: "kafka:9092"
+  KAFKA_GROUP_ID_STATE: "state-manager-group"
+  KAFKA_CLIENT_ID_STATE: "state-manager"
+  KAFKA_GROUP_ID_NOTIFICATIONS: "notification-manager-group"
+  KAFKA_CLIENT_ID_NOTIFICATIONS: "notification-manager"
+  KAFKA_CLIENT_ID_PRODUCER: "data-producer"
+
+  # Kafka Topics
+  KAFKA_TOPIC_SPEED: "city-speed-sensors"
+  KAFKA_TOPIC_WEATHER: "city-weather-sensors"
+  KAFKA_TOPIC_CAMERA: "city-camera-sensors"
+  KAFKA_TOPIC_VEHICLES: "vehicles-telemetry"
+  KAFKA_TOPIC_BUILDINGS: "buildings-monitoring"
+
+  # InfluxDB
+  INFLUXDB_URL: "http://influxdb:8086"
+  INFLUXDB_TOKEN: "digital-twin-admin-token"
+  INFLUXDB_ORG: "emergency-mgmt"
+  INFLUXDB_BUCKET_CITY: "city_metrics"
+  INFLUXDB_BUCKET_VEHICLES: "vehicles_metrics"
+  INFLUXDB_BUCKET_BUILDINGS: "buildings_metrics"
+  INFLUXDB_ADMIN_USER: "admin"
+  INFLUXDB_ADMIN_PASSWORD: "adminpassword"
+
+  # App Configuration
+  API_PORT: "3000"
+  WEBSOCKET_PORT: "3001"
+  NOTIFICATION_API_PORT: "3002"
+  SNAPSHOT_INTERVAL_MS: "300000"
+  SNAPSHOT_MIN_CHANGES: "100"
+  WS_UPDATE_BUFFER_MS: "100"
+  FULL_STATE_PUBLISH_INTERVAL_MS: "60000"
+  INCREMENTAL_STATE_PUBLISH_INTERVAL_MS: "5000"
+  MESSAGE_INTERVAL_MS: "2000"

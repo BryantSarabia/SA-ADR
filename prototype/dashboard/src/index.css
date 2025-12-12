@@ -1,0 +1,20 @@
+/* Leaflet styles - must come first */
+@import 'leaflet/dist/leaflet.css';
+@import 'leaflet.markercluster/dist/MarkerCluster.css';
+@import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply m-0 min-h-screen bg-gray-100 text-gray-900;
+  }
+}
+
+/* Custom marker icon styles */
+.custom-marker-icon {
+  background: transparent !important;
+  border: none !important;
+}
