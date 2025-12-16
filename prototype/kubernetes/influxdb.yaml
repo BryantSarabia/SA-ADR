@@ -82,8 +82,11 @@ spec:
       volumes:
         - name: init-scripts
           configMap:
-            name: influxdb-init-scripts
+            name: digital-twin-config
             defaultMode: 0755
+            items:
+              - key: init-buckets.sh
+                path: init-buckets.sh
   volumeClaimTemplates:
     - metadata:
         name: influxdb-data

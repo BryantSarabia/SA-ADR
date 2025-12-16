@@ -51,4 +51,33 @@ data:
   WS_UPDATE_BUFFER_MS: "100"
   FULL_STATE_PUBLISH_INTERVAL_MS: "60000"
   INCREMENTAL_STATE_PUBLISH_INTERVAL_MS: "5000"
+  INCREMENTAL_STATE_PUBLISH_INTERVAL_MS: "5000"
   MESSAGE_INTERVAL_MS: "2000"
+
+  # Initialization Scripts
+  init-buckets.sh: |
+    #!/bin/sh
+    set -e
+    
+    echo "Starting bucket initialization..."
+    
+    # Wait for InfluxDB to be ready
+    until influx ping; do
+      echo "Waiting for InfluxDB..."
+      sleep 2
+    done
+    
+    # Buckets to create
+    BUCKETS="city_metrics vehicles_metrics buildings_metrics"
+    
+    for BUCKET in $BUCKETS; do
+      if influx bucket list -n "$BUCKET" | grep -q "$BUCKET"; then
+        echo "Bucket $BUCKET already exists."
+      else
+        echo "Creating bucket $BUCKET..."
+        influx bucket create -n "$BUCKET" -r 0
+        echo "Bucket $BUCKET created."
+      fi
+    done
+    
+    echo "Bucket initialization complete."
