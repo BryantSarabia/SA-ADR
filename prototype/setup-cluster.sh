@@ -17,8 +17,6 @@ docker build -t digital-twin/state-manager:latest ./state-manager
 # Notification Manager
 docker build -t digital-twin/notification-manager:latest ./notification-manager
 
-# Data Producer
-docker build -t digital-twin/data-producer:latest ./producer
 
 # Recommendation Manager 
 # echo -e "${BLUE}Building Recommendation Manager (digital-twin/recommendation-manager:latest)...${NC}"
@@ -57,7 +55,7 @@ echo -e "${GREEN}Successfully built Buildings Monitor${NC}"
 
 # Dashboard
 echo -e "${BLUE}Building Dashboard (digital-twin/dashboard:latest)...${NC}"
-docker build \
+docker build --no-cache \
   --build-arg VITE_STATE_MANAGER_API_URL=http://localhost:3000 \
   --build-arg VITE_STATE_MANAGER_WS_URL=ws://localhost:3001 \
   --build-arg VITE_NOTIFICATION_MANAGER_API_URL=http://localhost:3002/api \
@@ -70,7 +68,6 @@ if [ "$(kubectl config current-context)" = "minikube" ]; then
     echo "This may take a minute..."
     minikube image load digital-twin/state-manager:latest
     minikube image load digital-twin/notification-manager:latest
-    minikube image load digital-twin/data-producer:latest
     # minikube image load digital-twin/recommendation-manager:latest 
     minikube image load digital-twin/city-simulator:latest
     minikube image load digital-twin/vehicles-simulator:latest

@@ -76,6 +76,7 @@ const formatCameraReadings = (readings: CameraSensorReading[]) => (
 );
 
 export const SensorMarkers = React.memo(function SensorMarkers({ sensors }: SensorMarkersProps) {
+  console.log(sensors.filter((sensor) => sensor.value === undefined))
   return (
     <MarkerClusterGroup>
       {sensors.filter(s => s.location).map((sensor) => (
