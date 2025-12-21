@@ -152,29 +152,61 @@ def generate_sensors_for_gateway(
     edge_start: int,
     edge_end: int,
     sensors_per_edge: Dict[str, int],
-    gateway_location: Dict[str, float]
+    gateway_location: Dict[str, float],
+    weather_stations_count: int = 3
 ) -> Dict[str, List[Dict]]:
     """
     Generate sensor configurations for a gateway covering multiple edges.
     
     Each sensor is assigned to a specific city graph edge within the gateway's range.
+    Weather stations are limited to a fixed number per gateway (they cover larger areas).
     
     Args:
         gateway_id: The gateway ID (GW-XXXXX)
         edge_start: First edge index this gateway covers
         edge_end: Last edge index this gateway covers (inclusive)
-        sensors_per_edge: Dict with sensor count per type per edge
+        sensors_per_edge: Dict with sensor count per type per edge (excludes weather)
         gateway_location: Gateway's base location for calculating sensor positions
+        weather_stations_count: Fixed number of weather stations per gateway
         
     Returns:
         Dict mapping sensor types to list of sensor configs with edge_id
     """
     sensors = {'speed': [], 'weather': [], 'camera': []}
+    total_edges = edge_end - edge_start + 1
     
+    # Generate weather stations (limited number, spread across gateway's edge range)
+    if weather_stations_count > 0:
+        # Distribute weather stations evenly across the edge range
+        weather_edge_step = max(1, total_edges // weather_stations_count)
+        for i in range(weather_stations_count):
+            # Pick edges spread across the range
+            weather_edge_index = edge_start + min(i * weather_edge_step, total_edges - 1)
+            weather_edge_id = generate_edge_id(weather_edge_index)
+            sensor_id = f"weather-{gateway_id}-{chr(97 + i)}"
+            
+            # Position with offset based on station index
+            offset_factor = i / max(1, weather_stations_count - 1) if weather_stations_count > 1 else 0.5
+            offset_lat = (offset_factor * 0.02 - 0.01) + random.uniform(-0.002, 0.002)
+            offset_lon = (offset_factor * 0.02 - 0.01) + random.uniform(-0.002, 0.002)
+            
+            sensors['weather'].append({
+                'sensor_id': sensor_id,
+                'edge_id': weather_edge_id,
+                'location': f"Weather station {i+1} near {weather_edge_id}",
+                'offset_lat': round(offset_lat, 6),
+                'offset_lon': round(offset_lon, 6)
+            })
+    
+    # Generate other sensors per edge (speed, camera, etc.)
     for edge_index in range(edge_start, edge_end + 1):
         edge_id = generate_edge_id(edge_index)
         
         for sensor_type, count in sensors_per_edge.items():
+            # Skip weather - already handled above
+            if sensor_type == 'weather':
+                continue
+                
             for i in range(count):
                 sensor_id = f"{sensor_type}-{edge_id}-{chr(97 + i)}"
                 
@@ -217,16 +249,16 @@ class CitySimulator:
         self.sampling_interval = self.simulation_config.get('sampling_interval_seconds', 3)
         self.sensors_per_edge = self.simulation_config.get('sensors_per_edge', {
             'speed': 1,
-            'weather': 1,
             'camera': 1
         })
         # Fallback to sensors_per_gateway if sensors_per_edge not defined
         if 'sensors_per_edge' not in self.simulation_config:
             self.sensors_per_edge = self.simulation_config.get('sensors_per_gateway', {
                 'speed': 1,
-                'weather': 1,
                 'camera': 1
             })
+        # Total weather stations for the entire city (distributed across gateways)
+        self.total_weather_stations = self.simulation_config.get('total_weather_stations', 15)
         
         # Apply logging configuration from config
         managed_resources = self.city_config.get('managed_resources', {})
@@ -274,12 +306,25 @@ class CitySimulator:
         Initialize gateways for this instance.
         
         Each gateway manages sensors across a range of city graph edges.
+        Weather stations are distributed across all gateways based on total_weather_stations.
         """
         districts = self.city_config.get('districts', [])
+        
+        # Calculate weather stations distribution across all gateways in the city
+        # Each gateway gets a share based on its global index
+        weather_stations_per_gateway = self.total_weather_stations // self.total_gateways
+        weather_stations_remainder = self.total_weather_stations % self.total_gateways
         
         for local_idx in range(self.gateways_per_instance):
             gateway_global_idx = self.gateway_start + local_idx
             gateway_id = generate_gateway_id(gateway_global_idx)
+            
+            # Calculate weather stations for this specific gateway
+            # First 'remainder' gateways get one extra station
+            if gateway_global_idx < weather_stations_remainder:
+                gateway_weather_count = weather_stations_per_gateway + 1
+            else:
+                gateway_weather_count = weather_stations_per_gateway
             
             # Calculate which edges this gateway covers
             edge_start, edge_end = calculate_gateway_edge_range(
@@ -306,7 +351,8 @@ class CitySimulator:
                 edge_start,
                 edge_end,
                 self.sensors_per_edge,
-                location
+                location,
+                gateway_weather_count
             )
             
             # Build gateway configuration
@@ -362,6 +408,7 @@ class CitySimulator:
         logger.info(f"   Total gateways (all instances): {self.total_gateways}")
         logger.info(f"   City graph edges: {self.total_edges}")
         logger.info(f"   Sensors per edge: {self.sensors_per_edge}")
+        logger.info(f"   Total weather stations (city): {self.total_weather_stations}")
         logger.info(f"   Kafka Topics: {KAFKA_TOPICS}")
         logger.info("=" * 70)
         

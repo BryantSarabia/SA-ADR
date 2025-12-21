@@ -21,9 +21,9 @@
         "gateways_per_instance": 5,
         "sensors_per_edge": {
             "speed": 1,
-            "weather": 1,
             "camera": 1
-        }
+        },
+        "total_weather_stations": 2
     },
     "managed_resources": {
         "monitor_interval_seconds": 3,
