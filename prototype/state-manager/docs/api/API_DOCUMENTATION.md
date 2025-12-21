@@ -244,7 +244,7 @@ curl http://localhost:3000/api/state/buildings
 
 ### Get Sensors
 
-Retrieve all sensors in the city.
+Retrieve all sensors in the city (from city-simulator edge managers).
 
 **Endpoint:** `GET /state/sensors`
 
@@ -253,15 +253,40 @@ Retrieve all sensors in the city.
 {
   "sensors": [
     {
-      "id": "sensor-1",
-      "type": "temperature",
-      "value": 22.5,
-      "unit": "celsius",
+      "sensorId": "speed-edge-centro-1",
+      "type": "speed",
+      "edgeId": "edge-centro-1",
+      "value": 45.67,
+      "unit": "km/h",
+      "status": "active",
       "location": {
-        "lat": 42.3498,
-        "lon": 13.3995
+        "latitude": 42.3506,
+        "longitude": 13.3992
       },
-      "timestamp": "2024-12-08T10:30:00.000Z"
+      "lastUpdated": "2025-12-21T10:30:00.000Z",
+      "metadata": {
+        "avgSpeed": 45.67,
+        "sensorCount": 2
+      }
+    },
+    {
+      "sensorId": "camera-edge-centro-1",
+      "type": "camera",
+      "edgeId": "edge-centro-1",
+      "value": 15,
+      "unit": "vehicles",
+      "status": "active",
+      "location": {
+        "latitude": 42.3506,
+        "longitude": 13.3992
+      },
+      "lastUpdated": "2025-12-21T10:30:00.000Z",
+      "metadata": {
+        "roadCondition": "clear",
+        "confidence": 0.92,
+        "vehicleCount": 15,
+        "congestionStatus": "free_flow"
+      }
     }
   ]
 }
@@ -432,76 +457,204 @@ curl http://localhost:3000/api/snapshots/latest
 ### City State
 ```typescript
 interface CityState {
-  city: {
-    name: string;
-    timestamp: string;
-    districts: District[];
-    publicTransport: PublicTransport;
-    emergencyServices: EmergencyServices;
-  }
+  cityId: string;
+  timestamp: string;
+  metadata: CityMetadata;
+  districts: District[];
+  publicTransport: PublicTransport;
+  emergencyServices: EmergencyServices;
+  cityGraph: CityGraph;
+}
+
+interface CityMetadata {
+  name: string;
+  version: string;
+  lastUpdated: string;
 }
 ```
 
 ### District
 ```typescript
 interface District {
-  id: string;
+  districtId: string;
   name: string;
-  buildings: Building[];
+  location: {
+    centerLatitude: number;
+    centerLongitude: number;
+    boundaries: {
+      north: number;
+      south: number;
+      east: number;
+      west: number;
+    };
+  };
   sensors: Sensor[];
+  buildings: Building[];
+  weatherStations: WeatherStation[];
+}
+```
+
+### Sensor (from city-simulator)
+```typescript
+interface Sensor {
+  sensorId: string;
+  type: 'speed' | 'camera' | string;  // Types from city-simulator
+  edgeId?: string;                     // Edge ID from city-simulator
+  value: number;
+  unit: string;                        // 'km/h' for speed, 'vehicles' for camera
+  status: 'active' | 'inactive' | 'error' | 'degraded';
+  lastUpdated: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+    elevation?: number;
+  };
+  metadata?: SensorMetadata;
+}
+
+// Metadata varies by sensor type
+interface SensorMetadata {
+  // Speed sensor metadata
+  avgSpeed?: number;
+  sensorCount?: number;
+  readings?: SpeedSensorReading[] | CameraSensorReading[];
+  
+  // Camera sensor metadata
+  roadCondition?: string;    // 'clear' | 'congestion' | 'accident' | 'obstacles' | 'flooding'
+  confidence?: number;       // 0.0 - 1.0
+  vehicleCount?: number;
+  congestionStatus?: string; // 'free_flow' | 'congested' | 'blocked' | 'slow'
+}
+
+interface SpeedSensorReading {
+  sensor_id: string;
+  speed_kmh: number;
+  latitude: number;
+  longitude: number;
+}
+
+interface CameraSensorReading {
+  sensor_id: string;
+  road_condition: string;
+  confidence: number;
+  vehicle_count: number;
+  latitude: number;
+  longitude: number;
+}
+```
+
+### Weather Station (from city-simulator)
+```typescript
+interface WeatherStation {
+  stationId: string;
+  name: string;
+  edgeId?: string;          // Edge ID from city-simulator
+  location: {
+    latitude: number;
+    longitude: number;
+    elevation: number;
+  };
+  readings: {
+    temperature: number;    // Celsius
+    humidity: number;       // Percentage
+    weatherConditions?: string;  // 'clear' | 'cloudy' | 'rainy' | 'foggy' | 'snowy'
+    pressure: number;       // hPa
+    windSpeed: number;      // m/s
+    windDirection: number;  // degrees
+    precipitation: number;  // mm
+    cloudCover: number;     // percentage
+    visibility: number;     // meters
+    uvIndex: number;
+    units: {
+      temperature: string;
+      humidity: string;
+      pressure: string;
+      windSpeed: string;
+      windDirection: string;
+      precipitation: string;
+      cloudCover: string;
+      visibility: string;
+    };
+  };
+  status: string;
+  lastUpdated: string;
+  metadata?: {
+    sensorCount: number;
+    readings: WeatherSensorReading[];
+  };
+}
+
+interface WeatherSensorReading {
+  sensor_id: string;
+  temperature_c: number;
+  humidity: number;
+  latitude: number;
+  longitude: number;
 }
 ```
 
 ### Building
 ```typescript
 interface Building {
-  id: string;
+  buildingId: string;
+  name: string;
   type: string;
-  occupancy: number;
-  energyConsumption: number;
   location: {
-    lat: number;
-    lon: number;
+    latitude: number;
+    longitude: number;
+    address: string;
   };
+  floors: number;
+  totalCapacity: number;
+  currentOccupancy: number;
+  occupancyRate: number;
+  sensors: Sensor[];
+  status: string;
 }
 ```
 
-### Sensor
+### City Graph
 ```typescript
-interface Sensor {
-  id: string;
-  type: string;
-  value: number;
-  unit: string;
-  location: {
-    lat: number;
-    lon: number;
-  };
-  timestamp: string;
-}
-```
-
-### Graph
-```typescript
-interface Graph {
+interface CityGraph {
   nodes: Node[];
   edges: Edge[];
 }
 
 interface Node {
-  id: string;
+  nodeId: string;
+  type: string;
+  name: string;
   location: {
-    lat: number;
-    lon: number;
+    latitude: number;
+    longitude: number;
   };
+  trafficLight?: TrafficLight;
 }
 
 interface Edge {
-  id: string;
-  source: string;
-  target: string;
-  length: number;
-  trafficData?: TrafficData;
+  edgeId: string;
+  roadSegmentId: string;
+  name: string;
+  fromNode: string;
+  toNode: string;
+  geometry: {
+    type: string;
+    coordinates: number[][];
+  };
+  distance: number;
+  speedLimit: number;
+  lanes: number;
+  direction: string;
+  trafficConditions?: TrafficConditions;
+  lastUpdated: string;
+}
+
+interface TrafficConditions {
+  averageSpeed: number;
+  congestionLevel: string;
+  vehicleCount: number;
+  travelTime: number;
+  incidents: Incident[];
 }
 ```
 
