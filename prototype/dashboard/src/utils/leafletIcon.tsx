@@ -1,8 +1,13 @@
 import {
+  AcademicCapIcon,
   BuildingOfficeIcon,
   CloudIcon,
+  HeartIcon,
+  HomeIcon,
   SignalIcon,
-  TruckIcon
+  SunIcon,
+  TruckIcon,
+  VideoCameraIcon,
 } from '@heroicons/react/24/solid';
 import { divIcon } from 'leaflet';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -29,10 +34,42 @@ export function createLucideIcon(
 
   // Map icon names to Heroicons components
   const iconComponents: Record<string, React.ComponentType<{ className?: string }>> = {
+    // Sensors
     radio: SignalIcon,
+    signal: SignalIcon,
+    gauge: SignalIcon,
+    
+    // Transport
     bus: TruckIcon,
+    truck: TruckIcon,
+    car: TruckIcon,
+    motorcycle: TruckIcon,
+    
+    // Weather
     cloud: CloudIcon,
+    sun: SunIcon,
+    'cloud-rain': CloudIcon,
+    'cloud-fog': CloudIcon,
+    'cloud-snow': CloudIcon,
+    'cloud-off': CloudIcon,
+    
+    // Buildings - use distinct icons
     building: BuildingOfficeIcon,
+    home: HomeIcon,
+    hospital: HeartIcon,
+    'graduation-cap': AcademicCapIcon,
+    church: BuildingOfficeIcon,
+    briefcase: BuildingOfficeIcon,
+    
+    // Cameras
+    video: VideoCameraIcon,
+    camera: VideoCameraIcon,
+    
+    // Vehicles / Emergency
+    ambulance: TruckIcon,
+    'fire-truck': TruckIcon,
+    police: TruckIcon,
+    siren: SignalIcon,
   };
 
   const IconComponent = iconComponents[iconName] || SignalIcon;

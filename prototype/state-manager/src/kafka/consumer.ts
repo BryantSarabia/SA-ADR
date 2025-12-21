@@ -276,8 +276,6 @@ export class KafkaConsumerManager {
       }
       
       // Cache shared state
-      this.stateCache.set('publicTransport', state.publicTransport);
-      this.stateCache.set('emergencyServices', state.emergencyServices);
       this.stateCache.set('cityGraph', state.cityGraph);
       
       logger.info(`Loaded state to cache: ${this.stateCache.size} entries`);
@@ -788,17 +786,11 @@ export class KafkaConsumerManager {
           const districtId = key.replace('district:', '');
           pipeline.set(`district:${districtId}:state`, JSON.stringify(value));
           operationCount++;
-        } else if (key === 'publicTransport') {
-          pipeline.set('city:publicTransport', JSON.stringify(value));
-          operationCount++;
-        } else if (key === 'emergencyServices') {
-          pipeline.set('city:emergencyServices', JSON.stringify(value));
+        } else if (key === 'vehicles') {
+          pipeline.set('city:vehicles', JSON.stringify(value));
           operationCount++;
         } else if (key === 'cityGraph') {
           pipeline.set('city:graph', JSON.stringify(value));
-          operationCount++;
-        } else if (key === 'vehicles') {
-          pipeline.set('city:vehicles', JSON.stringify(value));
           operationCount++;
         }
       }

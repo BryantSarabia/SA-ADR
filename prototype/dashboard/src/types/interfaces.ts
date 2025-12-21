@@ -421,65 +421,6 @@ export interface Gateway {
   sensors: GatewaySensor[];
 }
 
-// ==================== Public Transport Interfaces ====================
-
-export interface BusOccupancy {
-  current: number;
-  capacity: number;
-}
-
-export interface Bus {
-  busId: string;
-  route: string;
-  location: BusLocation;
-  speed: number;
-  occupancy: BusOccupancy;
-  nextStop: string;
-  estimatedArrival: Date | string;
-  status: string;
-}
-
-export interface TransportStation {
-  stationId: string;
-  name: string;
-  type: string;
-  location: Location;
-  platforms: number;
-  currentOccupancy: number;
-  sensors: Sensor[];
-}
-
-export interface PublicTransport {
-  buses: Bus[];
-  stations: TransportStation[];
-}
-
-// ==================== Emergency Services Interfaces ====================
-
-export interface EmergencyUnit {
-  unitId: string;
-  type: string;
-  status: string;
-  location: Location;
-  destination?: Location;
-  estimatedArrival?: Date | string;
-}
-
-export interface EmergencyIncident {
-  incidentId: string;
-  type: string;
-  priority: string;
-  location: BuildingLocation;
-  reportedAt: Date | string;
-  respondingUnits: string[];
-  status: string;
-}
-
-export interface EmergencyServices {
-  incidents: EmergencyIncident[];
-  units: EmergencyUnit[];
-}
-
 // ==================== City Interfaces ====================
 
 export interface CityMetadata {
@@ -493,8 +434,7 @@ export interface City {
   timestamp: Date | string;
   metadata: CityMetadata;
   districts: District[];
-  publicTransport: PublicTransport;
-  emergencyServices: EmergencyServices;
+  vehicles: Vehicle[];
   cityGraph: CityGraph;
 }
 

@@ -3,8 +3,7 @@ export interface City {
   timestamp:         Date;
   metadata:          CityMetadata;
   districts:         District[];
-  publicTransport:   PublicTransport;
-  emergencyServices: EmergencyServices;
+  vehicles:          Vehicle[];
   cityGraph:         CityGraph;
 }
 
@@ -395,29 +394,7 @@ export interface Units {
   humidity:      string;
 }
 
-export interface EmergencyServices {
-  incidents: EmergencyServicesIncident[];
-  units:     Unit[];
-}
-
-export interface EmergencyServicesIncident {
-  incidentId:      string;
-  type:            string;
-  priority:        string;
-  location:        BuildingLocation;
-  reportedAt:      Date;
-  respondingUnits: string[];
-  status:          string;
-}
-
-export interface Unit {
-  unitId:            string;
-  type:              string;
-  status:            string;
-  location:          Location;
-  destination?:      Location;
-  estimatedArrival?: Date;
-}
+// Note: EmergencyServices and PublicTransport have been replaced by the vehicles array in City
 
 export interface CityMetadata {
   name:        string;
@@ -425,39 +402,4 @@ export interface CityMetadata {
   lastUpdated: Date;
 }
 
-export interface PublicTransport {
-  buses:    Bus[];
-  stations: Station[];
-}
-
-export interface Bus {
-  busId:            string;
-  route:            string;
-  location:         BusLocation;
-  speed:            number;
-  occupancy:        Occupancy;
-  nextStop:         string;
-  estimatedArrival: Date;
-  status:           string;
-}
-
-export interface BusLocation {
-  latitude:    number;
-  longitude:   number;
-  currentStop: string;
-}
-
-export interface Occupancy {
-  current:  number;
-  capacity: number;
-}
-
-export interface Station {
-  stationId:        string;
-  name:             string;
-  type:             string;
-  location:         Location;
-  platforms:        number;
-  currentOccupancy: number;
-  sensors:          Sensor[];
-}
+// Note: PublicTransport (buses, stations) has been replaced by the vehicles array in City

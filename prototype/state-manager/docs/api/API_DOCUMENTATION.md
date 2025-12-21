@@ -2,7 +2,7 @@
 
 ## Overview
 
-The State Manager API provides RESTful endpoints to query the digital twin state of L'Aquila city. The API offers access to real-time city data including districts, buildings, sensors, public transport, and emergency services.
+The State Manager API provides RESTful endpoints to query the digital twin state of L'Aquila city. The API offers access to real-time city data including districts, buildings, sensors, vehicles, and the city road graph.
 
 **Base URL:** `http://localhost:3000/api`
 
@@ -21,8 +21,7 @@ The State Manager API provides RESTful endpoints to query the digital twin state
   - [Get City Graph](#get-city-graph)
   - [Get Buildings](#get-buildings)
   - [Get Sensors](#get-sensors)
-  - [Get Public Transport](#get-public-transport)
-  - [Get Emergency Services](#get-emergency-services)
+  - [Get Vehicles](#get-vehicles)
   - [Get State Snapshot](#get-state-snapshot)
   - [Get Latest Snapshot](#get-latest-snapshot)
 - [Data Models](#data-models)
@@ -72,13 +71,16 @@ Retrieve the complete current state of the city digital twin.
 **Response:**
 ```json
 {
-  "city": {
+  "cityId": "laquila",
+  "timestamp": "2024-12-08T10:30:00.000Z",
+  "metadata": {
     "name": "L'Aquila",
-    "timestamp": "2024-12-08T10:30:00.000Z",
-    "districts": [...],
-    "publicTransport": {...},
-    "emergencyServices": {...}
-  }
+    "version": "1.0.0",
+    "lastUpdated": "2024-12-08T10:30:00.000Z"
+  },
+  "districts": [...],
+  "vehicles": [...],
+  "cityGraph": {...}
 }
 ```
 
@@ -102,17 +104,59 @@ Retrieve all districts in the city.
 
 **Response:**
 ```json
-{
-  "districts": [
-    {
-      "id": "district-1",
-      "name": "Centro Storico",
-      "buildings": [...],
-      "sensors": [...],
-      "graph": {...}
-    }
-  ]
-}
+[
+  {
+    "districtId": "district-roio",
+    "name": "District district-roio",
+    "location": {
+      "centerLatitude": 42.333603,
+      "centerLongitude": 13.362390,
+      "boundaries": {
+        "north": 42.35,
+        "south": 42.31,
+        "east": 13.40,
+        "west": 13.32
+      }
+    },
+    "sensors": [...],
+    "buildings": [...],
+    "weatherStations": [...],
+    "gateways": [
+      {
+        "gatewayId": "GW-00012",
+        "name": "Gateway GW-00012 (230 edges)",
+        "location": {
+          "latitude": 42.333603,
+          "longitude": 13.362390
+        },
+        "lastUpdated": "2025-12-21T10:30:00.000Z",
+        "metadata": {
+          "name": "Gateway GW-00012 (230 edges)",
+          "version": "1.0.0",
+          "firmware": "EdgeOS 2.1.3",
+          "sensorCounts": {
+            "speed": 230,
+            "weather": 5,
+            "camera": 46
+          }
+        },
+        "sensors": [
+          {
+            "sensorId": "speed-E-00100",
+            "sensorType": "speed",
+            "gatewayId": "GW-00012",
+            "edgeId": "E-00100",
+            "latitude": 42.3345,
+            "longitude": 13.3678,
+            "unit": "km/h",
+            "status": "active",
+            "speedKmh": 45.5
+          }
+        ]
+      }
+    ]
+  }
+]
 ```
 
 **Status Codes:**
@@ -138,13 +182,39 @@ Retrieve a specific district by its ID.
 **Response:**
 ```json
 {
-  "district": {
-    "id": "district-1",
-    "name": "Centro Storico",
-    "buildings": [...],
-    "sensors": [...],
-    "graph": {...}
-  }
+  "districtId": "district-roio",
+  "name": "District district-roio",
+  "location": {
+    "centerLatitude": 42.333603,
+    "centerLongitude": 13.362390,
+    "boundaries": {
+      "north": 42.35,
+      "south": 42.31,
+      "east": 13.40,
+      "west": 13.32
+    }
+  },
+  "sensors": [...],
+  "buildings": [...],
+  "weatherStations": [...],
+  "gateways": [
+    {
+      "gatewayId": "GW-00012",
+      "name": "Gateway GW-00012 (230 edges)",
+      "location": {
+        "latitude": 42.333603,
+        "longitude": 13.362390
+      },
+      "metadata": {
+        "sensorCounts": {
+          "speed": 230,
+          "weather": 5,
+          "camera": 46
+        }
+      },
+      "sensors": [...]
+    }
+  ]
 }
 ```
 
@@ -154,7 +224,7 @@ Retrieve a specific district by its ID.
 
 **Example:**
 ```bash
-curl http://localhost:3000/api/state/districts/district-1
+curl http://localhost:3000/api/state/districts/district-roio
 ```
 
 ---
@@ -303,88 +373,61 @@ curl http://localhost:3000/api/state/sensors
 
 ---
 
-### Get Public Transport
+### Get Vehicles
 
-Retrieve public transport information including buses and status.
+Retrieve all vehicles data including ambulances, fire trucks, police vehicles, and other monitored vehicles.
 
-**Endpoint:** `GET /state/public-transport`
-
-**Response:**
-```json
-{
-  "publicTransport": {
-    "buses": [
-      {
-        "id": "bus-1",
-        "route": "Line 1",
-        "location": {
-          "lat": 42.3498,
-          "lon": 13.3995
-        },
-        "passengers": 25,
-        "capacity": 50,
-        "status": "on-time"
-      }
-    ]
-  }
-}
-```
-
-**Status Codes:**
-- `200 OK`: Transport data retrieved successfully
-- `404 Not Found`: No state available
-
-**Example:**
-```bash
-curl http://localhost:3000/api/state/public-transport
-```
-
----
-
-### Get Emergency Services
-
-Retrieve emergency services information including vehicles and incidents.
-
-**Endpoint:** `GET /state/emergency-services`
+**Endpoint:** `GET /state/vehicles`
 
 **Response:**
 ```json
-{
-  "emergencyServices": {
-    "vehicles": [
-      {
-        "id": "ambulance-1",
-        "type": "ambulance",
-        "status": "available",
-        "location": {
-          "lat": 42.3498,
-          "lon": 13.3995
-        }
+[
+  {
+    "vehicleId": "ambulance-001",
+    "type": "ambulance",
+    "lastUpdated": "2025-12-21T10:30:00.000Z",
+    "gpsPosition": {
+      "latitude": 42.3498,
+      "longitude": 13.3995,
+      "altitudeM": 721
+    },
+    "movement": {
+      "speedKmh": 45.5,
+      "directionDegrees": 180,
+      "heading": "south"
+    },
+    "managedResources": {
+      "batteryLevelPercent": 85,
+      "firmwareVersion": "v2.1.0"
+    },
+    "sensors": {
+      "accelerometer": {
+        "sensorId": "accel-ambulance-001",
+        "incidentDetected": false,
+        "thresholdG": 3.5,
+        "lastReadingTimestamp": "2025-12-21T10:30:00.000Z"
       }
-    ],
-    "incidents": [
-      {
-        "id": "incident-1",
-        "type": "medical",
-        "severity": "high",
-        "location": {
-          "lat": 42.3498,
-          "lon": 13.3995
-        },
-        "timestamp": "2024-12-08T10:25:00.000Z"
-      }
-    ]
+    },
+    "routePlanning": {
+      "currentDestination": {
+        "latitude": 42.3512,
+        "longitude": 13.4001,
+        "locationName": "San Salvatore Hospital"
+      },
+      "predictedDestinations": [],
+      "routePriority": "emergency"
+    }
   }
-}
+]
 ```
 
 **Status Codes:**
-- `200 OK`: Emergency data retrieved successfully
-- `404 Not Found`: No state available
+- `200 OK`: Vehicles retrieved successfully
+- `500 Internal Server Error`: Server error
 
 **Example:**
 ```bash
-curl http://localhost:3000/api/state/emergency-services
+curl http://localhost:3000/api/state/vehicles
 ```
 
 ---
@@ -461,8 +504,7 @@ interface CityState {
   timestamp: string;
   metadata: CityMetadata;
   districts: District[];
-  publicTransport: PublicTransport;
-  emergencyServices: EmergencyServices;
+  vehicles: Vehicle[];
   cityGraph: CityGraph;
 }
 
@@ -470,6 +512,52 @@ interface CityMetadata {
   name: string;
   version: string;
   lastUpdated: string;
+}
+```
+
+### Vehicle (from vehicles-simulator)
+```typescript
+interface Vehicle {
+  vehicleId: string;
+  type: string;                    // 'ambulance' | 'fire_truck' | 'police' | 'taxi' | etc.
+  lastUpdated: string;
+  gpsPosition: {
+    latitude: number;
+    longitude: number;
+    altitudeM: number;
+  };
+  movement: {
+    speedKmh: number;
+    directionDegrees: number;
+    heading: string;               // 'north' | 'south' | 'east' | 'west' | etc.
+  };
+  managedResources: {
+    batteryLevelPercent: number;
+    firmwareVersion: string;
+  };
+  sensors: {
+    accelerometer: {
+      sensorId: string;
+      incidentDetected: boolean;
+      thresholdG: number;
+      lastReadingTimestamp: string;
+    };
+  };
+  routePlanning: {
+    currentDestination?: {
+      latitude: number;
+      longitude: number;
+      locationName: string;
+    };
+    predictedDestinations: Array<{
+      latitude: number;
+      longitude: number;
+      locationName: string;
+      etaMinutes: number;
+      probability: number;
+    }>;
+    routePriority: string;        // 'normal' | 'high' | 'emergency'
+  };
 }
 ```
 
@@ -488,18 +576,69 @@ interface District {
       west: number;
     };
   };
-  sensors: Sensor[];
+  sensors: Sensor[];              // Flattened list of all sensors (for backwards compatibility)
   buildings: Building[];
   weatherStations: WeatherStation[];
+  gateways: Gateway[];            // Gateways that collect sensor data in this district
+}
+```
+
+### Gateway (from city-simulator)
+```typescript
+// A Gateway is a physical data collector in an area that hosts multiple sensors.
+// Each gateway aggregates sensor data from multiple graph edges and sends it as a unified payload.
+interface Gateway {
+  gatewayId: string;              // Unique gateway identifier (e.g., "GW-00012")
+  name: string;                   // Human-readable name (e.g., "Gateway GW-00012 (230 edges)")
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  lastUpdated: string;
+  metadata: {
+    name: string;
+    version: string;              // Gateway software version
+    firmware: string;             // Gateway firmware version
+    sensorCounts: {
+      speed: number;              // Number of speed sensors
+      weather: number;            // Number of weather sensors
+      camera: number;             // Number of camera sensors
+    };
+  };
+  sensors: GatewaySensor[];       // All sensors managed by this gateway
+}
+
+// Sensor data as reported by a gateway
+interface GatewaySensor {
+  sensorId: string;
+  sensorType: string;             // 'speed' | 'weather' | 'camera'
+  gatewayId: string;              // Gateway that collected this data
+  edgeId: string;                 // Graph edge ID (E-00000 to E-03458) where sensor is located
+  latitude: number;
+  longitude: number;
+  unit: string;
+  status: string;
+  // Speed sensor fields
+  speedKmh?: number;
+  // Weather sensor fields
+  temperatureC?: number;
+  humidity?: number;
+  weatherConditions?: string;     // 'clear' | 'cloudy' | 'rainy' | 'foggy' | 'snowy'
+  // Camera sensor fields
+  roadCondition?: string;         // 'clear' | 'congestion' | 'accident' | 'obstacles' | 'flooding'
+  confidence?: number;            // 0.0 - 1.0
+  vehicleCount?: number;
 }
 ```
 
 ### Sensor (from city-simulator)
 ```typescript
+// Flattened sensor data (extracted from gateways for backwards compatibility)
 interface Sensor {
   sensorId: string;
   type: 'speed' | 'camera' | string;  // Types from city-simulator
   edgeId?: string;                     // Edge ID from city-simulator
+  gatewayId?: string;                  // Gateway ID that collected this sensor data
   value: number;
   unit: string;                        // 'km/h' for speed, 'vehicles' for camera
   status: 'active' | 'inactive' | 'error' | 'degraded';
@@ -526,6 +665,7 @@ interface SensorMetadata {
   congestionStatus?: string; // 'free_flow' | 'congested' | 'blocked' | 'slow'
 }
 
+
 interface SpeedSensorReading {
   sensor_id: string;
   speed_kmh: number;
@@ -549,6 +689,7 @@ interface WeatherStation {
   stationId: string;
   name: string;
   edgeId?: string;          // Edge ID from city-simulator
+  gatewayId?: string;       // Gateway ID that collected this sensor data
   location: {
     latitude: number;
     longitude: number;
@@ -811,11 +952,8 @@ curl http://localhost:3000/api/state/graph
 # Get all sensors
 curl http://localhost:3000/api/state/sensors
 
-# Get public transport
-curl http://localhost:3000/api/state/public-transport
-
-# Get emergency services
-curl http://localhost:3000/api/state/emergency-services
+# Get all vehicles
+curl http://localhost:3000/api/state/vehicles
 
 # Get latest snapshot
 curl http://localhost:3000/api/snapshots/latest

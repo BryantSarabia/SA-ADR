@@ -14,7 +14,4 @@ export type Readings = import('./interfaces').WeatherReadings;
 export type Node = import('./interfaces').TrafficNode;
 export type TrafficConditionsIncident = import('./interfaces').TrafficIncident;
 export type Geometry = import('./interfaces').EdgeGeometry;
-export type Occupancy = import('./interfaces').BusOccupancy;
-export type Station = import('./interfaces').TransportStation;
-export type Unit = import('./interfaces').EmergencyUnit;
-export type EmergencyServicesIncident = import('./interfaces').EmergencyIncident;
+
