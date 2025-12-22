@@ -1,4 +1,5 @@
 export { BuildingMarkers } from './BuildingMarkers';
+export { GatewayMarkers } from './GatewayMarkers';
 export { Map } from './Map';
 export { MapControls, type LayerType } from './MapControls';
 export { RoadSegmentLayer } from './RoadSegmentLayer';

@@ -49,6 +49,15 @@ spec:
                   name: digital-twin-config
                   key: MONGODB_PORT
           command: ['sh', '-c', 'until nc -z mongodb-state $MONGODB_PORT; do echo waiting for mongodb-state; sleep 2; done;']
+        - name: wait-for-redis
+          image: busybox:1.28
+          env:
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: digital-twin-config
+                  key: REDIS_PORT
+          command: ['sh', '-c', 'until nc -z redis $REDIS_PORT; do echo waiting for redis; sleep 2; done;']
       containers:
         - name: state-manager
           image: digital-twin/state-manager:latest

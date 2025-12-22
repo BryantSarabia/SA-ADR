@@ -3,6 +3,7 @@ import { ErrorMessage, LoadingSpinner } from '../components/common';
 import { Layout } from '../components/layout';
 import {
   BuildingMarkers,
+  GatewayMarkers,
   Map,
   MapControls,
   RoadSegmentLayer,
@@ -69,6 +70,11 @@ export function DashboardPage() {
     [cityState?.districts]
   );
   
+  const allGateways = useMemo(
+    () => cityState?.districts.flatMap((district) => district.gateways) || [],
+    [cityState?.districts]
+  );
+  
   const allRoadSegments = useMemo(
     () => cityState?.cityGraph.edges || [],
     [cityState?.cityGraph.edges]
@@ -87,6 +93,7 @@ export function DashboardPage() {
     sensors: true,
     weather: false, // Default off - too many markers
     vehicles: true,
+    gateways: false, // Default off
   });
 
   const [sensorFilters, setSensorFilters] = useState<string[]>([]);
@@ -224,6 +231,11 @@ export function DashboardPage() {
             {/* Vehicle markers */}
             {visibleLayers.vehicles && (
               <VehicleMarkers vehicles={filteredVehicles} />
+            )}
+            
+            {/* Gateway markers */}
+            {visibleLayers.gateways && (
+              <GatewayMarkers gateways={allGateways} />
             )}
           </Map>
         )}

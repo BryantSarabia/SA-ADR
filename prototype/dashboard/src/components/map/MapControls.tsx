@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Filter, Layers, Truck } from 'lucide-react';
 import { useState } from 'react';
 
-export type LayerType = 'roads' | 'buildings' | 'sensors' | 'weather' | 'vehicles';
+export type LayerType = 'roads' | 'buildings' | 'sensors' | 'weather' | 'vehicles' | 'gateways';
 
 interface MapControlsProps {
   visibleLayers: Record<LayerType, boolean>;
@@ -26,6 +26,7 @@ const LAYER_LABELS: Record<LayerType, string> = {
   sensors: 'IoT Sensors',
   weather: 'Weather Stations',
   vehicles: 'Vehicles',
+  gateways: 'Gateways',
 };
 
 export function MapControls({

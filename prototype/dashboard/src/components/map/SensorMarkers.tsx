@@ -1,5 +1,5 @@
 import React from 'react';
-import { Marker, Popup } from 'react-leaflet';
+import { Icon, Marker, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import type { CameraSensorReading, Sensor, SpeedSensorReading } from '../../types';
 import { SensorStatus } from '../../types';
@@ -8,6 +8,17 @@ import { createLucideIcon } from '../../utils/leafletIcon';
 interface SensorMarkersProps {
   sensors: Sensor[];
 }
+
+// Cache icons by type and status
+const iconCache = new Map<string, Icon>();
+
+const getSensorIcon = (type: string, status: string) => {
+  const key = `${type}-${status}`;
+  if (!iconCache.has(key)) {
+    iconCache.set(key, createSensorIcon(type, status));
+  }
+  return iconCache.get(key)!;
+};
 
 // Create icons based on sensor type and status
 const createSensorIcon = (type: string, status: string) => {
@@ -75,15 +86,12 @@ const formatCameraReadings = (readings: CameraSensorReading[]) => (
   </div>
 );
 
-export const SensorMarkers = React.memo(function SensorMarkers({ sensors }: SensorMarkersProps) {
-  console.log(sensors.filter((sensor) => sensor.value === undefined))
-  return (
-    <MarkerClusterGroup>
-      {sensors.filter(s => s.location).map((sensor) => (
+const SensorMarker = React.memo(
+  ({ sensor }: { sensor: Sensor }) => (
         <Marker
           key={sensor.sensorId}
           position={[sensor.location!.latitude, sensor.location!.longitude]}
-          icon={createSensorIcon(sensor.type, sensor.status)}
+          icon={getSensorIcon(sensor.type, sensor.status)}
         >
           <Popup>
             <div className="p-2 min-w-[200px]">
@@ -158,6 +166,19 @@ export const SensorMarkers = React.memo(function SensorMarkers({ sensors }: Sens
             </div>
           </Popup>
         </Marker>
+  ),
+  (prev, next) => 
+    prev.sensor.sensorId === next.sensor.sensorId &&
+    prev.sensor.status === next.sensor.status &&
+    prev.sensor.value === next.sensor.value
+);
+
+export const SensorMarkers = React.memo(function SensorMarkers({ sensors }: SensorMarkersProps) {
+  console.log(sensors.filter((sensor) => sensor.value === undefined))
+  return (
+    <MarkerClusterGroup>
+      {sensors.map((sensor) => (
+        <SensorMarker key={sensor.sensorId} sensor={sensor} />
       ))}
     </MarkerClusterGroup>
   );

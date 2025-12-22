@@ -2,12 +2,16 @@ import {
   AcademicCapIcon,
   BuildingOfficeIcon,
   CloudIcon,
+  FireIcon,
   HeartIcon,
   HomeIcon,
+  ServerIcon,
+  ShieldCheckIcon,
   SignalIcon,
   SunIcon,
   TruckIcon,
   VideoCameraIcon,
+  WifiIcon,
 } from '@heroicons/react/24/solid';
 import { divIcon } from 'leaflet';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -39,11 +43,11 @@ export function createLucideIcon(
     signal: SignalIcon,
     gauge: SignalIcon,
     
-    // Transport
-    bus: TruckIcon,
-    truck: TruckIcon,
-    car: TruckIcon,
-    motorcycle: TruckIcon,
+    // Transport - Different icons for each type
+    bus: TruckIcon,           // Bus uses truck icon
+    truck: TruckIcon,         // Truck
+    car: HomeIcon,            // Car uses a simpler icon
+    motorcycle: SignalIcon,   // Motorcycle uses signal (smaller)
     
     // Weather
     cloud: CloudIcon,
@@ -65,11 +69,16 @@ export function createLucideIcon(
     video: VideoCameraIcon,
     camera: VideoCameraIcon,
     
-    // Vehicles / Emergency
-    ambulance: TruckIcon,
-    'fire-truck': TruckIcon,
-    police: TruckIcon,
+    // Vehicles / Emergency - Distinct icons
+    ambulance: HeartIcon,           // Ambulance uses heart icon
+    'fire-truck': FireIcon,         // Fire truck uses fire icon
+    police: ShieldCheckIcon,        // Police uses shield icon
     siren: SignalIcon,
+    
+    // Gateway
+    gateway: ServerIcon,
+    server: ServerIcon,
+    wifi: WifiIcon,
   };
 
   const IconComponent = iconComponents[iconName] || SignalIcon;

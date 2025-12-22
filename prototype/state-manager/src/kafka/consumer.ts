@@ -394,6 +394,7 @@ export class KafkaConsumerManager {
     let district = this.stateCache.get(cacheKey);
 
     if (!district) {
+      logger.info(`Creating new district in cache: ${district_id}`);
       district = this.createEmptyDistrict(district_id, location.latitude, location.longitude);
       this.stateCache.set(cacheKey, district);
     }
@@ -452,6 +453,7 @@ export class KafkaConsumerManager {
     if (gatewayIndex !== -1) {
       district.gateways[gatewayIndex] = gatewayData;
     } else {
+      logger.info(`Adding new gateway to district ${district_id}: ${gateway_id}`);
       district.gateways.push(gatewayData);
     }
 
@@ -483,6 +485,7 @@ export class KafkaConsumerManager {
         if (sensorIndex !== -1) {
           district.sensors[sensorIndex] = sensorData;
         } else {
+          logger.info(`Adding new speed sensor to district ${district.districtId}: ${sensorId}`);
           district.sensors.push(sensorData);
         }
       } else if (sensor.sensorType === 'weather') {
@@ -511,6 +514,7 @@ export class KafkaConsumerManager {
         if (stationIndex !== -1) {
           district.weatherStations[stationIndex] = stationData;
         } else {
+          logger.info(`Adding new weather station to district ${district.districtId}: ${stationId}`);
           district.weatherStations.push(stationData);
         }
       } else if (sensor.sensorType === 'camera') {
@@ -538,6 +542,7 @@ export class KafkaConsumerManager {
         if (sensorIndex !== -1) {
           district.sensors[sensorIndex] = sensorData;
         } else {
+          logger.info(`Adding new camera sensor to district ${district.districtId}: ${sensorId}`);
           district.sensors.push(sensorData);
         }
       }
