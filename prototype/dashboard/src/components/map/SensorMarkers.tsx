@@ -11,7 +11,7 @@ interface SensorMarkersProps {
 }
 
 // Cache icons by type and status
-const iconCache = new Map<string, L.Icon>();
+const iconCache = new Map<string, L.DivIcon>();
 
 const getSensorIcon = (type: string, status: string) => {
   const key = `${type}-${status}`;
