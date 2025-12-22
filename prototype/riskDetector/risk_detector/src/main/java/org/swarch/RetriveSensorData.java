@@ -15,6 +15,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class job is to constantly call the scheduled method retriveData() to
@@ -23,6 +25,8 @@ import java.util.List;
  */
 @ApplicationScoped
 public class RetriveSensorData {
+
+  private static final Logger LOG = LoggerFactory.getLogger(RetriveSensorData.class);
 
   @Inject
   GetSensorDataService getSensorDataService;
@@ -46,6 +50,7 @@ public class RetriveSensorData {
 
   @Scheduled(every = "10s")
   public void retriveData() {
+    LOG.info("Starting periodic data extraction and symptom check");
 
     System.err.println("#################################################");
     System.err.println("extractDataFromDB...");
@@ -61,6 +66,7 @@ public class RetriveSensorData {
 
     System.err.println("#################################################");
     System.err.println("checkSymptoms");
+    LOG.info("Checking symptoms from extracted data");
     List<Symptom> symptoms = (List<Symptom>) checkSymptomsService.checkSymptoms(retrivedData);
 
     if (symptoms != null && !symptoms.isEmpty()) {
@@ -75,6 +81,7 @@ public class RetriveSensorData {
   public void sendDataToPlanner(List<Symptom> symptoms) {
     System.err.println("#################################################");
     System.err.println("Sending symptoms to planner");
+    LOG.info("Sending symptoms to planner: {}", symptoms);
 
     if (producer == null) {
       System.err.println("Producer is null!");

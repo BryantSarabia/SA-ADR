@@ -19,6 +19,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.util.Arrays;
+import java.util.Properties;
+import java.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * PlannerMain represents the Planning component of the MAPE-K loop.
  *
@@ -36,6 +42,8 @@ import jakarta.inject.Inject;
  */
 @ApplicationScoped
 public class PlannerMain {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PlannerMain.class);
 
   @Inject
   PlanForSymptomService planforSymptomService;
@@ -83,6 +91,7 @@ public class PlannerMain {
    */
   @Scheduled(every = "10s")
   void extract_symptoms() {
+    LOG.info("Checking for new symptoms from analyzer");
     System.out.println("########################################");
     System.out.println("listening for symptoms from analyzer...");
 
@@ -95,6 +104,7 @@ public class PlannerMain {
         JsonNode symptomMessage = objectMapper.readTree(record.value());
         String symptomString = symptomMessage.get("severity").asText(); // e.g., "HIGH"
 
+        LOG.info("Received symptom: {}", symptomString);
         System.out.println("Received symptom: " + symptomString);
 
         Symptom symptom = Symptom.valueOf(symptomString);

@@ -26,12 +26,13 @@ public class CheckSymptomsServiceImpl implements CheckSymptomsService {
 
   private List<Symptom> checkSymptomsFromData(Map<String, Object> sensorData) {
     List<Symptom> symptoms = new ArrayList<>();
+    System.out.println("checkSymptomsFromData called with " + sensorData.size() + " entries");
 
     // City metrics: speed -> TRAFFIC_JAM if < 80
     if (sensorData.containsKey("city_metrics_sensor_speed_value")) {
       double speed = (double) sensorData.get("city_metrics_sensor_speed_value");
       if (speed < SymptomThreshold.TRAFFIC_JAM.getValue()) {
-        System.err.println("Symptom detected: TRAFFIC_JAM - Speed: " + speed + " < " + SymptomThreshold.TRAFFIC_JAM.getValue());
+        System.out.println("Symptom detected: TRAFFIC_JAM - Speed: " + speed + " < " + SymptomThreshold.TRAFFIC_JAM.getValue());
         symptoms.add(Symptom.TRAFFIC_JAM);
       }
     }
@@ -40,7 +41,7 @@ public class CheckSymptomsServiceImpl implements CheckSymptomsService {
     if (sensorData.containsKey("city_metrics_sensor_weather_value")) {
       double temp = (double) sensorData.get("city_metrics_sensor_weather_value");
       if (temp > 30.0) {
-        System.err.println("Symptom detected: WEATHER_HAZARD - Temperature: " + temp + " > 30.0");
+        System.out.println("Symptom detected: WEATHER_HAZARD - Temperature: " + temp + " > 30.0");
         symptoms.add(Symptom.WEATHER_HAZARD);
       }
     }
@@ -48,8 +49,9 @@ public class CheckSymptomsServiceImpl implements CheckSymptomsService {
     // City metrics: road_condition -> ROAD_BLOCKED if obstacles
     if (sensorData.containsKey("city_metrics_sensor_camera_road_condition")) {
       String roadCondition = (String) sensorData.get("city_metrics_sensor_camera_road_condition");
+      System.out.println("Checking road condition: " + roadCondition);
       if ("obstacles".equals(roadCondition)) {
-        System.err.println("Symptom detected: ROAD_BLOCKED - Road Condition: " + roadCondition);
+        System.out.println("Symptom detected: ROAD_BLOCKED - Road Condition: " + roadCondition);
         symptoms.add(Symptom.ROAD_BLOCKED);
       }
     }
