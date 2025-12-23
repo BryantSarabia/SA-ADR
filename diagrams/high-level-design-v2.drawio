@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" version="29.2.9" pages="6">
   <diagram name="high level view" id="AMu-a5JW_K2xF6O9r2qn">
-    <mxGraphModel dx="1712" dy="1054" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="653" dy="753" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -11,37 +11,37 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;sketch=1;curveFitting=1;jiggle=2;container=0;" value="" vertex="1">
-          <mxGeometry height="290" width="1280" x="890" y="220" as="geometry" />
+          <mxGeometry height="290" width="1340" x="860" y="220" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Data ingestion" vertex="1">
-          <mxGeometry height="60" width="120" x="965" y="260" as="geometry" />
+          <mxGeometry height="60" width="120" x="898" y="260" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Simulation Engine" vertex="1">
           <mxGeometry height="60" width="120" x="1385.75" y="380" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Recommendation Manager" vertex="1">
-          <mxGeometry height="60" width="120" x="1400" y="260" as="geometry" />
+          <mxGeometry height="60" width="120" x="1333" y="260" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Log Manager" vertex="1">
-          <mxGeometry height="60" width="120" x="1835" y="260" as="geometry" />
+          <mxGeometry height="60" width="120" x="1768" y="260" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Audit Trail&lt;div&gt;Manager&lt;/div&gt;" vertex="1">
-          <mxGeometry height="60" width="120" x="1550" y="260" as="geometry" />
+          <mxGeometry height="60" width="120" x="1483" y="260" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Risk Dectector" vertex="1">
-          <mxGeometry height="60" width="120" x="1260" y="260" as="geometry" />
+          <mxGeometry height="60" width="120" x="1193" y="260" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Command Manager" vertex="1">
-          <mxGeometry height="60" width="120" x="1980" y="260" as="geometry" />
+          <mxGeometry height="60" width="120" x="1913" y="260" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="User Dashboard" vertex="1">
           <mxGeometry height="60" width="120" x="1543.75" y="380" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Notification Manager" vertex="1">
-          <mxGeometry height="60" width="120" x="1110" y="260" as="geometry" />
+          <mxGeometry height="60" width="120" x="1043" y="260" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="User Manager" vertex="1">
-          <mxGeometry height="60" width="120" x="1690" y="260" as="geometry" />
+          <mxGeometry height="60" width="120" x="1623" y="260" as="geometry" />
         </mxCell>
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Infrastructure Manager" vertex="1">
           <mxGeometry height="60" width="120" x="1860.75" y="380" as="geometry" />
@@ -100,11 +100,14 @@
         <mxCell id="vw0IyRnepz0G-Tf6Jftc-32" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Routing" vertex="1">
           <mxGeometry height="60" width="120" x="2019.25" y="380" as="geometry" />
         </mxCell>
+        <mxCell id="T8t4N2LDpnioHs8dXo7A-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;container=0;" value="Evacuation Manager" vertex="1">
+          <mxGeometry height="60" width="120" x="2058" y="260" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
   <diagram name="Edge Layer" id="IP0wUQFTDPii_1kQ0ISf">
-    <mxGraphModel dx="1603" dy="811" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1042" dy="527" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -300,7 +303,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Server Layer" id="qBpMJejZtuOgo03RbDv6">
-    <mxGraphModel dx="4287" dy="1978" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="3708" dy="1686" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -770,8 +773,20 @@
         <mxCell id="YkuyoXbsjOE091yl0u6k-1" parent="esz_jJ4bV_77b3MaFUYC-32" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;sketch=1;curveFitting=1;jiggle=2;fontSize=22;container=0;" value="" vertex="1">
           <mxGeometry height="349.6" width="259.5360824742268" x="491.75" y="722.76" as="geometry" />
         </mxCell>
-        <mxCell id="YkuyoXbsjOE091yl0u6k-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;container=0;fontSize=22;" value="&lt;b&gt;Audit Trail Microservice&lt;/b&gt;" vertex="1">
-          <mxGeometry height="45.6" width="258.8530927835052" x="-1130" y="500" as="geometry" />
+        <mxCell id="YkuyoXbsjOE091yl0u6k-2" parent="esz_jJ4bV_77b3MaFUYC-32" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;container=0;fontSize=22;" value="&lt;b&gt;Evacuation Manager Microservice&lt;/b&gt;" vertex="1">
+          <mxGeometry height="45.6" width="258.8530927835052" x="492.44000000000005" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="YkuyoXbsjOE091yl0u6k-3" parent="esz_jJ4bV_77b3MaFUYC-32" style="rounded=0;whiteSpace=wrap;html=1;fontSize=22;container=0;" value="Evacuation API" vertex="1">
+          <mxGeometry height="91.2" width="163.9175257731959" x="539.5600000000001" y="759.9999999999999" as="geometry" />
+        </mxCell>
+        <mxCell id="YkuyoXbsjOE091yl0u6k-4" parent="esz_jJ4bV_77b3MaFUYC-32" style="rounded=0;whiteSpace=wrap;html=1;fontSize=22;container=0;" value="Backend" vertex="1">
+          <mxGeometry height="91.2" width="163.9175257731959" x="539.3900000000001" y="900.8" as="geometry" />
+        </mxCell>
+        <mxCell id="YkuyoXbsjOE091yl0u6k-5" edge="1" parent="esz_jJ4bV_77b3MaFUYC-32" source="YkuyoXbsjOE091yl0u6k-4" style="endArrow=classic;startArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="YkuyoXbsjOE091yl0u6k-3" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="610" y="930" as="sourcePoint" />
+            <mxPoint x="660" y="880" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
@@ -829,7 +844,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Routing example" id="RfskrlQwJsUiAQwIYjsm">
-    <mxGraphModel dx="1665" dy="777" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1052" dy="527" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
