@@ -15,7 +15,6 @@ Sistema di gestione emergenze basato su architettura **Kubernetes** con Minikube
 ### 1. Start Minikube Cluster
 
 ```bash
-cd prototype
 
 # Start minikube with metrics and dashboard (recommended)
 ./start-cluster.sh
